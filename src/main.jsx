@@ -9,9 +9,12 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import './styles/theme.css'
 
 import App from './App.jsx'
+import { ClinicProvider } from './store/ClinicProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <ClinicProvider>
+      <App />
+    </ClinicProvider>
   </StrictMode>
 )

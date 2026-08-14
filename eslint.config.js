@@ -29,6 +29,10 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
+      // A validação de props exigiria o pacote prop-types, mantido fora das
+      // dependências do projeto. Os contratos ficam documentados por comentário
+      // na assinatura de cada componente.
+      'react/prop-types': 'off',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
