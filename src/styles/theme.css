@@ -1,0 +1,173 @@
+/* Tema da aplicação. Precisa ser importado depois do bootstrap.min.css. */
+
+/* ---------- 1. Tokens ---------- */
+
+:root {
+  /* Branco sobre #0f766e = 5,47:1 (WCAG AA). Azul fica reservado para informação. */
+  --ah-primary: #0f766e;
+  --ah-primary-hover: #0d5f59;
+  --ah-primary-active: #0a4c47;
+  --ah-primary-soft: #e6f2f1;
+  --ah-primary-rgb: 15, 118, 110;
+
+  --ah-bg: #f4f6f8;
+  --ah-surface: #ffffff;
+  --ah-border: #e3e8ee;
+  --ah-text: #1f2937;
+  --ah-text-muted: #6b7280;
+
+  /* Situações do agendamento — sempre acompanhadas de rótulo em texto. */
+  --ah-status-agendado: #64748b;
+  --ah-status-confirmado: #2563eb;
+  --ah-status-aguardando: #d97706;
+  --ah-status-atendimento: #7c3aed;
+  --ah-status-atendido: #15803d;
+  --ah-status-cancelado: #dc2626;
+  --ah-status-faltou: #7c2d12;
+
+  --ah-pagamento-pago: #15803d;
+  --ah-pagamento-pendente: #d97706;
+  --ah-pagamento-convenio: #2563eb;
+  --ah-pagamento-isento: #64748b;
+
+  --ah-radius: 12px;
+  --ah-radius-sm: 8px;
+  --ah-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --ah-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+
+  --ah-sidebar-width: 248px;
+  --ah-topbar-height: 64px;
+}
+
+/* ---------- 2. Bootstrap ---------- */
+
+:root {
+  --bs-primary: var(--ah-primary);
+  --bs-primary-rgb: var(--ah-primary-rgb);
+
+  --bs-body-bg: var(--ah-bg);
+  --bs-body-color: var(--ah-text);
+  --bs-secondary-color: var(--ah-text-muted);
+  --bs-border-color: var(--ah-border);
+
+  --bs-border-radius: var(--ah-radius);
+  --bs-border-radius-sm: var(--ah-radius-sm);
+  --bs-border-radius-lg: var(--ah-radius);
+
+  /* O Bootstrap monta a cor do link com rgba() a partir do valor -rgb. */
+  --bs-link-color-rgb: var(--ah-primary-rgb);
+  --bs-link-hover-color-rgb: var(--ah-primary-rgb);
+
+  --bs-focus-ring-color: rgba(var(--ah-primary-rgb), 0.25);
+}
+
+/* ---------- 3. Correções ----------
+   Componentes abaixo trazem a cor primária fixa em hexadecimal no CSS
+   compilado e não leem --bs-primary; a regra precisa ser reescrita.
+   Lista obtida buscando #0d6efd no bootstrap.min.css. */
+
+.btn-primary {
+  --bs-btn-bg: var(--ah-primary);
+  --bs-btn-border-color: var(--ah-primary);
+  --bs-btn-hover-bg: var(--ah-primary-hover);
+  --bs-btn-hover-border-color: var(--ah-primary-hover);
+  --bs-btn-active-bg: var(--ah-primary-active);
+  --bs-btn-active-border-color: var(--ah-primary-active);
+  --bs-btn-disabled-bg: var(--ah-primary);
+  --bs-btn-disabled-border-color: var(--ah-primary);
+  --bs-btn-focus-shadow-rgb: var(--ah-primary-rgb);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--ah-primary);
+  --bs-btn-border-color: var(--ah-primary);
+  --bs-btn-hover-bg: var(--ah-primary);
+  --bs-btn-hover-border-color: var(--ah-primary);
+  --bs-btn-active-bg: var(--ah-primary-active);
+  --bs-btn-active-border-color: var(--ah-primary-active);
+  --bs-btn-disabled-color: var(--ah-primary);
+  --bs-btn-focus-shadow-rgb: var(--ah-primary-rgb);
+}
+
+.btn-link {
+  --bs-btn-color: var(--ah-primary);
+  --bs-btn-hover-color: var(--ah-primary-hover);
+  --bs-btn-active-color: var(--ah-primary-active);
+}
+
+.form-check-input:checked {
+  background-color: var(--ah-primary);
+  border-color: var(--ah-primary);
+}
+
+.form-check-input:focus {
+  border-color: var(--ah-primary);
+  box-shadow: 0 0 0 0.25rem rgba(var(--ah-primary-rgb), 0.25);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ah-primary);
+  box-shadow: 0 0 0 0.25rem rgba(var(--ah-primary-rgb), 0.25);
+}
+
+.nav-pills {
+  --bs-nav-pills-link-active-bg: var(--ah-primary);
+}
+
+.nav-link {
+  --bs-nav-link-color: var(--ah-text-muted);
+  --bs-nav-link-hover-color: var(--ah-primary);
+}
+
+.list-group {
+  --bs-list-group-active-bg: var(--ah-primary);
+  --bs-list-group-active-border-color: var(--ah-primary);
+  --bs-list-group-action-hover-bg: var(--ah-primary-soft);
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--ah-primary);
+  --bs-dropdown-border-color: var(--ah-border);
+  --bs-dropdown-border-radius: var(--ah-radius-sm);
+}
+
+.pagination {
+  --bs-pagination-color: var(--ah-primary);
+  --bs-pagination-hover-color: var(--ah-primary-hover);
+  --bs-pagination-focus-color: var(--ah-primary-hover);
+  --bs-pagination-focus-bg: var(--ah-primary-soft);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(var(--ah-primary-rgb), 0.25);
+  --bs-pagination-active-bg: var(--ah-primary);
+  --bs-pagination-active-border-color: var(--ah-primary);
+}
+
+.progress {
+  --bs-progress-bar-bg: var(--ah-primary);
+}
+
+/* ---------- 4. Base ---------- */
+
+body {
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  --bs-card-border-color: var(--ah-border);
+  --bs-card-border-radius: var(--ah-radius);
+  --bs-card-bg: var(--ah-surface);
+  box-shadow: var(--ah-shadow-sm);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ah-primary);
+  outline-offset: 2px;
+}
+
+/* Asterisco de campo obrigatório, para não repetir no JSX. */
+.form-label.obrigatorio::after {
+  content: " *";
+  color: var(--ah-status-cancelado);
+  font-weight: 600;
+}
