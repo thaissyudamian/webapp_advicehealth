@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useClinica } from '../store/clinicContext.js'
 import { useToast } from '../hooks/toastContext.js'
 import { bloqueiosDaData, comRelacionados } from '../domain/selectors.js'
-import { formatarDataExtenso, hojeISO } from '../domain/format.js'
+import { formatarData, formatarDataExtenso, hojeISO } from '../domain/format.js'
 
 import { PageHeader } from '../components/ui/PageHeader.jsx'
 import { NavegadorData } from '../components/NavegadorData.jsx'
@@ -103,6 +103,12 @@ export function Agenda() {
                   <span key={bloqueio.id} className="agenda-etiqueta-bloqueio badge text-bg-light border">
                     <i className="bi bi-slash-circle" aria-hidden="true"></i>
                     {medico?.nome}: {bloqueio.horaInicio}–{bloqueio.horaFim} ({bloqueio.motivo})
+                    {bloqueio.dataFim && bloqueio.dataFim > bloqueio.data && (
+                      <span className="text-secondary">
+                        {' '}
+                        · {formatarData(bloqueio.data)} a {formatarData(bloqueio.dataFim)}
+                      </span>
+                    )}
                     <button
                       type="button"
                       className="btn-close btn-close-sm"

@@ -181,7 +181,7 @@ export function gerarDadosIniciais() {
   const bloqueios = [
     { id: 'blq-1', medicoId: 'med-3', data: hoje, horaInicio: '15:00', horaFim: '16:00', motivo: 'Consulta externa' },
     { id: 'blq-2', medicoId: 'med-4', data: amanha, horaInicio: '07:00', horaFim: '12:00', motivo: 'Congresso' },
-    { id: 'blq-3', medicoId: 'med-2', data: depois, horaInicio: '08:00', horaFim: '17:00', motivo: 'Férias' },
+    { id: 'blq-3', medicoId: 'med-2', data: depois, dataFim: somarDias(hoje, 4), horaInicio: '08:00', horaFim: '17:00', motivo: 'Férias' },
   ]
 
   const avisos = [

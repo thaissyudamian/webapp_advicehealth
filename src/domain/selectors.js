@@ -40,8 +40,17 @@ export function agendamentosDaData(estado, data, { medicoId = null } = {}) {
     .map((a) => comRelacionados(estado, a))
 }
 
+/* Um bloqueio pode abranger vários dias: férias e congresso, que são os
+   motivos mais comuns, raramente cabem em um só. `dataFim` é opcional — sem
+   ele o bloqueio vale apenas no dia de início, que era o formato anterior e
+   continua válido para os registros já gravados. */
 export function bloqueiosDaData(estado, data, { medicoId = null } = {}) {
-  return estado.bloqueios.filter((b) => b.data === data && (!medicoId || b.medicoId === medicoId))
+  return estado.bloqueios.filter(
+    (b) =>
+      b.data <= data &&
+      (b.dataFim ?? b.data) >= data &&
+      (!medicoId || b.medicoId === medicoId)
+  )
 }
 
 /* Consulta de agendamentos.

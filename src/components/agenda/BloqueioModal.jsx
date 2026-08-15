@@ -4,7 +4,7 @@ import { useClinica } from '../../store/clinicContext.js'
 import { useToast } from '../../hooks/toastContext.js'
 import { agendamentosDaData } from '../../domain/selectors.js'
 import { MOTIVOS_BLOQUEIO, STATUS_OCUPAM_HORARIO } from '../../domain/constants.js'
-import { horaParaMinutos } from '../../domain/format.js'
+import { formatarData, horaParaMinutos, somarDias } from '../../domain/format.js'
 
 import { Modal } from '../ui/Modal.jsx'
 
@@ -20,6 +20,7 @@ export function BloqueioModal({ aberto, medicoIdInicial, dataInicial, aoFechar }
 
   const [medicoId, setMedicoId] = useState('')
   const [data, setData] = useState('')
+  const [dataFim, setDataFim] = useState('')
   const [horaInicio, setHoraInicio] = useState('08:00')
   const [horaFim, setHoraFim] = useState('12:00')
   const [motivo, setMotivo] = useState(MOTIVOS_BLOQUEIO[0])
@@ -29,24 +30,41 @@ export function BloqueioModal({ aberto, medicoIdInicial, dataInicial, aoFechar }
     if (!aberto) return
     setMedicoId(medicoIdInicial ?? clinica.medicos[0]?.id ?? '')
     setData(dataInicial ?? '')
+    setDataFim(dataInicial ?? '')
   }, [aberto, medicoIdInicial, dataInicial, clinica.medicos])
 
   const intervaloInvalido = horaFim <= horaInicio
+  const datasInvalidas = Boolean(dataFim) && dataFim < data
+  const variosDias = Boolean(dataFim) && dataFim > data
 
+  /* Percorre todos os dias do intervalo: com um bloqueio de férias, olhar só a
+     data inicial deixaria passar os agendamentos do segundo dia em diante —
+     justamente os que seriam apagados sem aviso. */
   const conflitos = useMemo(() => {
-    if (!medicoId || !data || intervaloInvalido) return []
-    return agendamentosDaData(clinica, data, { medicoId }).filter((a) => {
-      if (!STATUS_OCUPAM_HORARIO.includes(a.status)) return false
-      const inicio = horaParaMinutos(a.hora)
-      return inicio < horaParaMinutos(horaFim) && inicio + (a.duracao ?? 30) > horaParaMinutos(horaInicio)
-    })
-  }, [clinica, medicoId, data, horaInicio, horaFim, intervaloInvalido])
+    if (!medicoId || !data || intervaloInvalido || datasInvalidas) return []
+
+    const encontrados = []
+    const ultimo = dataFim || data
+    for (let dia = data; dia <= ultimo; dia = somarDias(dia, 1)) {
+      const doDia = agendamentosDaData(clinica, dia, { medicoId }).filter((a) => {
+        if (!STATUS_OCUPAM_HORARIO.includes(a.status)) return false
+        const inicio = horaParaMinutos(a.hora)
+        return inicio < horaParaMinutos(horaFim) && inicio + (a.duracao ?? 30) > horaParaMinutos(horaInicio)
+      })
+      encontrados.push(...doDia)
+    }
+    return encontrados
+  }, [clinica, medicoId, data, dataFim, horaInicio, horaFim, intervaloInvalido, datasInvalidas])
 
   const confirmar = async () => {
     setEnviando(true)
     try {
-      await clinica.salvarBloqueio({ medicoId, data, horaInicio, horaFim, motivo })
-      toast.sucesso(`Período indisponível registrado das ${horaInicio} às ${horaFim}.`)
+      await clinica.salvarBloqueio({ medicoId, data, dataFim: dataFim || data, horaInicio, horaFim, motivo })
+      toast.sucesso(
+        variosDias
+          ? `Período indisponível de ${formatarData(data)} a ${formatarData(dataFim)}.`
+          : `Período indisponível registrado das ${horaInicio} às ${horaFim}.`
+      )
       aoFechar()
     } catch {
       toast.erro('Não foi possível registrar o bloqueio.')
@@ -55,7 +73,7 @@ export function BloqueioModal({ aberto, medicoIdInicial, dataInicial, aoFechar }
     }
   }
 
-  const impedido = !medicoId || !data || intervaloInvalido || conflitos.length > 0
+  const impedido = !medicoId || !data || intervaloInvalido || datasInvalidas || conflitos.length > 0
 
   return (
     <Modal
@@ -99,20 +117,41 @@ export function BloqueioModal({ aberto, medicoIdInicial, dataInicial, aoFechar }
           </select>
         </div>
 
-        <div className="col-12 col-sm-4">
+        <div className="col-6 col-sm-4">
           <label className="form-label obrigatorio" htmlFor="bloqueio-data">
-            Data
+            De
           </label>
           <input
             id="bloqueio-data"
+            name="bloqueio-data"
             type="date"
             className="form-control"
             value={data}
-            onChange={(e) => setData(e.target.value)}
+            onChange={(e) => {
+              setData(e.target.value)
+              if (!dataFim || dataFim < e.target.value) setDataFim(e.target.value)
+            }}
           />
         </div>
 
         <div className="col-6 col-sm-4">
+          <label className="form-label obrigatorio" htmlFor="bloqueio-data-fim">
+            Até
+          </label>
+          <input
+            id="bloqueio-data-fim"
+            name="bloqueio-data-fim"
+            type="date"
+            className={`form-control${datasInvalidas ? ' is-invalid' : ''}`}
+            value={dataFim}
+            onChange={(e) => setDataFim(e.target.value)}
+          />
+          {datasInvalidas && (
+            <div className="invalid-feedback d-block">A data final não pode ser anterior.</div>
+          )}
+        </div>
+
+        <div className="col-6 col-sm-6">
           <label className="form-label obrigatorio" htmlFor="bloqueio-inicio">
             Início
           </label>
@@ -125,7 +164,7 @@ export function BloqueioModal({ aberto, medicoIdInicial, dataInicial, aoFechar }
           />
         </div>
 
-        <div className="col-6 col-sm-4">
+        <div className="col-6 col-sm-6">
           <label className="form-label obrigatorio" htmlFor="bloqueio-fim">
             Fim
           </label>
@@ -169,7 +208,7 @@ export function BloqueioModal({ aberto, medicoIdInicial, dataInicial, aoFechar }
               <ul className="mb-2 ps-3 small">
                 {conflitos.map((c) => (
                   <li key={c.id}>
-                    {c.hora} — {c.paciente?.nome}
+                    {formatarData(c.data)} às {c.hora} — {c.paciente?.nome}
                   </li>
                 ))}
               </ul>

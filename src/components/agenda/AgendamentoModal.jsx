@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useClinica } from '../../store/clinicContext.js'
 import { useToast } from '../../hooks/toastContext.js'
@@ -47,6 +47,16 @@ const ICONES_FORMA = {
   convenio: 'bi-shield-plus',
 }
 
+/* Situação inicial da cobrança para um agendamento novo.
+
+   O escopo parte de que "o pagamento da consulta ocorrerá nesse momento", e o
+   botão diz "confirmar agendamento e cobrar" — então o formulário abre pronto
+   para cobrar, não com a cobrança pendente. Paciente de convênio é a exceção
+   real: ali o consultório fatura depois do atendimento. */
+function cobrancaInicial(convenio) {
+  return convenio && convenio !== 'Particular' ? PAGAMENTO.CONVENIO : PAGAMENTO.PAGO
+}
+
 function valoresIniciais(agendamento, paciente, inicial) {
   return {
     medicoId: agendamento?.medicoId ?? inicial?.medicoId ?? '',
@@ -75,7 +85,7 @@ function valoresIniciais(agendamento, paciente, inicial) {
     valor: agendamento?.pagamento?.valor ?? '',
     desconto: agendamento?.pagamento?.desconto ?? 0,
     forma: agendamento?.pagamento?.forma ?? '',
-    pagamentoStatus: agendamento?.pagamento?.status ?? PAGAMENTO.PENDENTE,
+    pagamentoStatus: agendamento?.pagamento?.status ?? cobrancaInicial(paciente?.convenio),
   }
 }
 
@@ -83,6 +93,9 @@ export function AgendamentoModal({ aberto, agendamento, inicial, aoFechar }) {
   const clinica = useClinica()
   const toast = useToast()
   const [reconhecido, setReconhecido] = useState(null)
+
+  // Depois que o usuário escolhe a situação da cobrança, o convênio para de mandar.
+  const cobrancaManual = useRef(false)
 
   const edicao = Boolean(agendamento)
   const pacienteAtual = agendamento
@@ -178,6 +191,7 @@ export function AgendamentoModal({ aberto, agendamento, inicial, aoFechar }) {
     if (aberto) {
       redefinir(valoresIniciais(agendamento, pacienteAtual, inicial))
       setReconhecido(null)
+      cobrancaManual.current = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aberto, agendamento?.id, inicial?.medicoId, inicial?.data, inicial?.hora])
@@ -217,6 +231,14 @@ export function AgendamentoModal({ aberto, agendamento, inicial, aoFechar }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valores.cpf])
+
+  /* Trocar o convênio muda quem paga: particular cobra no ato, convênio fatura
+     depois. A situação acompanha essa escolha até o usuário definir a dele. */
+  useEffect(() => {
+    if (edicao || cobrancaManual.current) return
+    definir('pagamentoStatus', cobrancaInicial(valores.convenio))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valores.convenio])
 
   // O valor sugerido acompanha o médico escolhido, mas continua editável.
   useEffect(() => {
@@ -456,7 +478,10 @@ export function AgendamentoModal({ aberto, agendamento, inicial, aoFechar }) {
                   name="pagamentoStatus"
                   className="form-select"
                   value={valores.pagamentoStatus}
-                  onChange={form.mudar}
+                  onChange={(evento) => {
+                    cobrancaManual.current = true
+                    form.mudar(evento)
+                  }}
                 >
                   <option value={PAGAMENTO.PENDENTE}>Pendente</option>
                   <option value={PAGAMENTO.PAGO}>Pago</option>
