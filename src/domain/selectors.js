@@ -38,6 +38,73 @@ export function bloqueiosDaData(estado, data, { medicoId = null } = {}) {
   return estado.bloqueios.filter((b) => b.data === data && (!medicoId || b.medicoId === medicoId))
 }
 
+/* Consulta de agendamentos.
+
+   Todos os filtros são opcionais e se combinam. Sem nenhum, devolve tudo —
+   agendados e atendidos juntos: esconder um dos dois por padrão faria a tela
+   deixar de responder à pergunta que ela existe para responder.
+
+   A busca aceita nome ou CPF no mesmo campo. Quem atende não quer escolher
+   antes em qual dos dois vai procurar. */
+export function filtrarAgendamentos(estado, filtros = {}) {
+  const {
+    busca = '',
+    medicoId = '',
+    status = '',
+    pagamento = '',
+    de = '',
+    ate = '',
+    semCancelados = false,
+  } = filtros
+
+  const termo = busca.trim().toLowerCase()
+  const digitos = somenteDigitos(busca)
+
+  return estado.agendamentos
+    .filter((a) => {
+      /* Um agendamento cancelado com pagamento pendente não é uma cobrança a
+         receber. O resumo do dia já o exclui; sem esta opção, o lembrete
+         "5 pagamentos pendentes" abriria uma lista com 6 linhas. */
+      if (semCancelados && a.status === STATUS.CANCELADO) return false
+      if (medicoId && a.medicoId !== medicoId) return false
+      if (status && a.status !== status) return false
+      if (pagamento && a.pagamento?.status !== pagamento) return false
+      if (de && a.data < de) return false
+      if (ate && a.data > ate) return false
+
+      if (termo) {
+        const paciente = buscarPaciente(estado, a.pacienteId)
+        const nome = paciente?.nome?.toLowerCase() ?? ''
+        const cpf = somenteDigitos(paciente?.cpf)
+        const achouNome = nome.includes(termo)
+        const achouCpf = digitos.length >= 3 && cpf.includes(digitos)
+        if (!achouNome && !achouCpf) return false
+      }
+
+      return true
+    })
+    .sort(
+      (a, b) => b.data.localeCompare(a.data) || horaParaMinutos(b.hora) - horaParaMinutos(a.hora)
+    )
+    .map((a) => comRelacionados(estado, a))
+}
+
+/* Totais do resultado filtrado. Cobrado é o que foi efetivamente pago; o
+   restante fica separado para não inflar o faturamento com o que não entrou. */
+export function totaisDaConsulta(agendamentos) {
+  return agendamentos.reduce(
+    (totais, a) => {
+      const liquido = valorLiquido(a.pagamento)
+      if (a.status === STATUS.CANCELADO) return { ...totais, cancelados: totais.cancelados + 1 }
+      if (a.pagamento?.status === PAGAMENTO.PAGO) return { ...totais, recebido: totais.recebido + liquido }
+      if (a.pagamento?.status === PAGAMENTO.PENDENTE) return { ...totais, aReceber: totais.aReceber + liquido }
+      if (a.pagamento?.status === PAGAMENTO.CONVENIO) return { ...totais, convenio: totais.convenio + liquido }
+      return totais
+    },
+    { recebido: 0, aReceber: 0, convenio: 0, cancelados: 0 }
+  )
+}
+
 export const valorLiquido = (pagamento) =>
   Math.max(0, (Number(pagamento?.valor) || 0) - (Number(pagamento?.desconto) || 0))
 
@@ -129,7 +196,7 @@ export function lembretesDoDia(estado, data) {
       icone: 'bi-person-check',
       cor: 'var(--ah-status-aguardando)',
       texto: `${resumo.aguardando} paciente(s) na recepção aguardando atendimento`,
-      para: '/agenda',
+      para: `/agenda?data=${data}`,
       acao: 'Ver na agenda',
     })
   }
@@ -140,7 +207,7 @@ export function lembretesDoDia(estado, data) {
       icone: 'bi-telephone',
       cor: 'var(--ah-status-agendado)',
       texto: `${resumo.naoConfirmados} consulta(s) de hoje ainda sem confirmação`,
-      para: '/agenda',
+      para: `/agenda?data=${data}`,
       acao: 'Confirmar',
     })
   }
@@ -151,7 +218,7 @@ export function lembretesDoDia(estado, data) {
       icone: 'bi-cash-stack',
       cor: 'var(--ah-pagamento-pendente)',
       texto: `${resumo.pendentes} pagamento(s) pendente(s) hoje`,
-      para: '/agendamentos',
+      para: `/agendamentos?pagamento=pendente&semCancelados=1&de=${data}&ate=${data}`,
       acao: 'Ver cobranças',
     })
   }
@@ -164,7 +231,7 @@ export function lembretesDoDia(estado, data) {
       icone: 'bi-slash-circle',
       cor: 'var(--ah-status-cancelado)',
       texto: `${medico?.nome ?? 'Médico'} indisponível das ${bloqueio.horaInicio} às ${bloqueio.horaFim} — ${bloqueio.motivo}`,
-      para: '/agenda',
+      para: `/agenda?data=${data}`,
       acao: 'Ver período',
     })
   }
@@ -175,7 +242,7 @@ export function lembretesDoDia(estado, data) {
       icone: 'bi-exclamation-triangle',
       cor: 'var(--ah-status-faltou)',
       texto: `${resumo.faltas} falta(s) registrada(s) hoje`,
-      para: '/agendamentos',
+      para: `/agendamentos?status=faltou&de=${data}&ate=${data}`,
       acao: 'Ver registros',
     })
   }
