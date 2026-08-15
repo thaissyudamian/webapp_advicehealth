@@ -45,7 +45,9 @@
   border: 1px solid var(--ah-border);
   border-radius: var(--ah-radius);
   overflow: hidden;
-  min-width: 720px;
+  /* Sem min-width fixa: a largura mínima vem do minmax() das colunas, definido
+     no componente. Com quatro médicos a grade ultrapassa a tela e rola dentro
+     de .agenda-rolagem; filtrada por um médico, ela cabe inteira no celular. */
 }
 
 .agenda-rolagem {
@@ -225,4 +227,23 @@
   background-color: var(--ah-bg);
   border-radius: var(--ah-radius);
   padding: 16px;
+}
+
+/* ---------- Etiqueta de período indisponível ---------- */
+
+.agenda-bloqueios {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* O texto traz nome do médico, faixa de horário e motivo — em telas estreitas
+   isso não cabe numa linha só, e sem quebrar a etiqueta ultrapassa o cartão. */
+.agenda-etiqueta-bloqueio {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.4;
 }

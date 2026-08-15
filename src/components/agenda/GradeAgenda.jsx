@@ -17,9 +17,15 @@ import './agenda.css'
    horários diferentes, e as linhas precisam permanecer alinhadas entre as
    colunas. Fora do expediente de um médico, a célula dele fica neutra. */
 
-export function GradeAgenda({ data, aoClicarLivre, aoClicarAgendamento }) {
+export function GradeAgenda({ data, medicoId, aoClicarLivre, aoClicarAgendamento }) {
   const clinica = useClinica()
-  const { medicos } = clinica
+
+  /* Filtrar por médico reduz a grade a uma coluna. Em tela pequena isso troca
+     rolagem lateral constante por uma agenda que cabe inteira. */
+  const medicos = useMemo(
+    () => (medicoId ? clinica.medicos.filter((m) => m.id === medicoId) : clinica.medicos),
+    [clinica.medicos, medicoId]
+  )
 
   const horas = useMemo(() => {
     if (medicos.length === 0) return []

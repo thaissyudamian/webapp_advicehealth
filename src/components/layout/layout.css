@@ -118,6 +118,24 @@
   .app-topo-direita { margin-left: auto; }
 }
 
+/* Em telas estreitas os três itens não cabem numa linha com o espaçamento
+   padrão, e a rolagem horizontal cortava "Agendamentos" pela metade. Menos
+   respiro e permissão para quebrar resolvem sem esconder texto. */
+@media (max-width: 575.98px) {
+  .app-nav {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .app-nav-link {
+    padding: 7px 10px;
+    font-size: 14px;
+    gap: 6px;
+  }
+
+  .app-marca-nome small { display: none; }
+}
+
 /* ---------- Conteúdo ---------- */
 
 .app-principal {

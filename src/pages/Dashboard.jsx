@@ -107,7 +107,7 @@ export function Dashboard() {
 
       <section className="row g-4 mb-4" aria-label="Indicadores do dia">
         {indicadores.map((item) => (
-          <div className="col-6 col-xl-3" key={item.rotulo}>
+          <div className="col-6 col-lg-3" key={item.rotulo}>
             <StatCard {...item} plano />
           </div>
         ))}
@@ -132,9 +132,9 @@ export function Dashboard() {
                       <tr>
                         <th scope="col">Hora</th>
                         <th scope="col">Paciente</th>
-                        <th scope="col">Médico</th>
+                        <th scope="col" className="d-none d-md-table-cell">Médico</th>
                         <th scope="col">Situação</th>
-                        <th scope="col">Pagamento</th>
+                        <th scope="col" className="d-none d-lg-table-cell">Pagamento</th>
                         <th scope="col" className="text-end">Valor</th>
                       </tr>
                     </thead>
@@ -145,8 +145,16 @@ export function Dashboard() {
                         return (
                           <tr key={item.id}>
                             <td className="font-monospace">{item.hora}</td>
-                            <td>{item.paciente?.nome}</td>
                             <td>
+                              {item.paciente?.nome}
+                              {/* Em telas pequenas a coluna do médico sai da
+                                  tabela; o dado reaparece aqui em vez de se
+                                  perder. */}
+                              <span className="d-block d-md-none small text-secondary">
+                                {item.medico?.nome}
+                              </span>
+                            </td>
+                            <td className="d-none d-md-table-cell">
                               <span
                                 className="d-inline-block rounded-circle me-2 align-middle"
                                 style={{ width: 10, height: 10, backgroundColor: item.medico?.cor }}
@@ -157,7 +165,7 @@ export function Dashboard() {
                             <td>
                               <Badge rotulo={situacao.rotulo} cor={situacao.cor} icone={situacao.icone} />
                             </td>
-                            <td>
+                            <td className="d-none d-lg-table-cell">
                               <Badge rotulo={pagamento.rotulo} cor={pagamento.cor} />
                             </td>
                             <td className="text-end">

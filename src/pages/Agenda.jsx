@@ -26,6 +26,7 @@ export function Agenda() {
   const [parametros, setParametros] = useSearchParams()
 
   const data = parametros.get('data') ?? hojeISO()
+  const medicoFiltrado = parametros.get('medico') ?? ''
 
   const [novo, setNovo] = useState(null) // { medicoId, hora } ao clicar numa faixa livre
   const [selecionado, setSelecionado] = useState(null)
@@ -33,7 +34,15 @@ export function Agenda() {
   const [transferindo, setTransferindo] = useState(null)
   const [bloqueando, setBloqueando] = useState(false)
 
-  const irPara = (novaData) => setParametros(novaData === hojeISO() ? {} : { data: novaData })
+  const atualizar = (mudancas) => {
+    const novos = new URLSearchParams(parametros)
+    for (const [chave, valor] of Object.entries(mudancas)) {
+      valor ? novos.set(chave, valor) : novos.delete(chave)
+    }
+    setParametros(novos, { replace: true })
+  }
+
+  const irPara = (novaData) => atualizar({ data: novaData === hojeISO() ? '' : novaData })
 
   const bloqueios = bloqueiosDaData(clinica, data)
 
@@ -69,12 +78,29 @@ export function Agenda() {
         <div className="card-body d-flex flex-wrap align-items-center gap-2">
           <NavegadorData data={data} aoMudar={irPara} rotulo="Data da agenda" />
 
+          <label className="visually-hidden" htmlFor="agenda-medico">
+            Filtrar por médico
+          </label>
+          <select
+            id="agenda-medico"
+            className="form-select w-auto"
+            value={medicoFiltrado}
+            onChange={(evento) => atualizar({ medico: evento.target.value })}
+          >
+            <option value="">Todos os médicos</option>
+            {clinica.medicos.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nome}
+              </option>
+            ))}
+          </select>
+
           {bloqueios.length > 0 && (
-            <div className="d-flex flex-wrap gap-2 ms-auto">
+            <div className="agenda-bloqueios d-flex flex-wrap gap-2 ms-lg-auto">
               {bloqueios.map((bloqueio) => {
                 const medico = clinica.medicos.find((m) => m.id === bloqueio.medicoId)
                 return (
-                  <span key={bloqueio.id} className="badge text-bg-light border d-flex align-items-center gap-2">
+                  <span key={bloqueio.id} className="agenda-etiqueta-bloqueio badge text-bg-light border">
                     <i className="bi bi-slash-circle" aria-hidden="true"></i>
                     {medico?.nome}: {bloqueio.horaInicio}–{bloqueio.horaFim} ({bloqueio.motivo})
                     <button
@@ -93,6 +119,7 @@ export function Agenda() {
 
       <GradeAgenda
         data={data}
+        medicoId={medicoFiltrado}
         aoClicarLivre={({ medicoId, hora }) => setNovo({ medicoId, hora })}
         aoClicarAgendamento={(agendamento) => setSelecionado(agendamento.id)}
       />

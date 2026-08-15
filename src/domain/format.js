@@ -49,9 +49,14 @@ export function formatarData(iso) {
   return `${dia}/${mes}/${ano}`
 }
 
+/* O Intl devolve o dia da semana em minúsculas ("sábado, 15 de agosto de
+   2026"). A capitalização é feita aqui, e não com a classe text-capitalize do
+   Bootstrap, porque aquela capitaliza todas as palavras e produziria
+   "Sábado, 15 De Agosto De 2026". */
 export function formatarDataExtenso(iso) {
   if (!iso) return ''
-  return dataExtensa.format(paraData(iso))
+  const texto = dataExtensa.format(paraData(iso))
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
 export function formatarDiaSemana(iso) {

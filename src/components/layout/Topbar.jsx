@@ -41,7 +41,7 @@ export function Topbar() {
         </nav>
 
         <div className="app-topo-direita">
-          <p className="mb-0 text-secondary small text-capitalize d-none d-lg-block">
+          <p className="mb-0 text-secondary small d-none d-lg-block">
             {formatarDataExtenso(hojeISO())}
           </p>
           <span className="app-avatar" title={`${USUARIO} — Recepção`}>

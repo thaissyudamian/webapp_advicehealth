@@ -162,6 +162,7 @@ export function Agendamentos() {
               <div className="d-flex flex-wrap align-items-center gap-2">
                 <input
                   id="filtro-de"
+                  name="filtro-de"
                   type="date"
                   className="form-control w-auto"
                   value={filtros.de}
@@ -170,6 +171,8 @@ export function Agendamentos() {
                 />
                 <span className="text-secondary">até</span>
                 <input
+                  id="filtro-ate"
+                  name="filtro-ate"
                   type="date"
                   className="form-control w-auto"
                   value={filtros.ate}

@@ -100,20 +100,36 @@
 
 .ui-stat-plano-rotulo {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 7px;
   margin: 0 0 4px;
-  font-size: 14px;
+  font-size: 13.5px;
+  line-height: 1.3;
   color: var(--ah-text-muted);
+  min-width: 0;
 }
 
+.ui-stat-plano-rotulo i {
+  /* Sem isto o ícone encolhe quando o rótulo quebra em duas linhas */
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* O piso do clamp precisa caber numa coluna de meia tela em 375px.
+   Valores em reais vêm do Intl com espaço não separável, então
+   "R$ 2.480,00" nunca quebra em duas linhas: se a fonte for grande
+   demais, o texto transborda em vez de se ajustar. */
 .ui-stat-plano-valor {
   margin: 0;
-  font-size: clamp(26px, 3vw, 34px);
+  font-size: clamp(19px, 5vw, 32px);
   font-weight: 600;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 992px) {
+  .ui-stat-plano-rotulo { font-size: 14px; }
 }
 
 .ui-stat-acao {
