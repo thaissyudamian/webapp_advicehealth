@@ -1,6 +1,7 @@
 /* Área de trabalho: visão do dia para quem opera a recepção. */
 
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { useClinica } from '../store/clinicContext.js'
 import { useToast } from '../hooks/toastContext.js'
@@ -14,6 +15,7 @@ import { Badge } from '../components/ui/Badge.jsx'
 import { EmptyState } from '../components/ui/EmptyState.jsx'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog.jsx'
 import { PainelAvisos } from '../components/PainelAvisos.jsx'
+import { NavegadorData } from '../components/NavegadorData.jsx'
 import { AgendamentoModal } from '../components/agenda/AgendamentoModal.jsx'
 
 export function Dashboard() {
@@ -23,13 +25,20 @@ export function Dashboard() {
   const [restaurando, setRestaurando] = useState(false)
   const [agendando, setAgendando] = useState(false)
 
-  const hoje = hojeISO()
-  const resumo = resumoDoDia(clinica, hoje)
-  const agenda = agendamentosDaData(clinica, hoje)
+  const [parametros, setParametros] = useSearchParams()
 
-  // Só faz sentido oferecer horário que ainda não passou.
-  const proximoLivre = proximoHorarioLivre(clinica, hoje, {
-    aPartirDe: ehHoje(hoje) ? horaAtual() : null,
+  /* A data fica na URL, como na agenda: permite abrir o painel de um dia
+     específico e é o que faz o botão voltar do navegador funcionar. */
+  const data = parametros.get('data') ?? hojeISO()
+  const irPara = (nova) => setParametros(nova === hojeISO() ? {} : { data: nova })
+
+  const resumo = resumoDoDia(clinica, data)
+  const agenda = agendamentosDaData(clinica, data)
+
+  // Em dias futuros o expediente inteiro está disponível; só faz sentido
+  // descartar horários já passados quando o dia mostrado é o de hoje.
+  const proximoLivre = proximoHorarioLivre(clinica, data, {
+    aPartirDe: ehHoje(data) ? horaAtual() : null,
   })
 
   const restaurar = async () => {
@@ -47,7 +56,7 @@ export function Dashboard() {
 
   const indicadores = [
     {
-      rotulo: 'Agendamentos hoje',
+      rotulo: 'Agendamentos do dia',
       valor: resumo.agendamentos,
       icone: 'bi-calendar3',
       detalhe: resumo.cancelados > 0 ? `${resumo.cancelados} cancelado(s)` : null,
@@ -71,13 +80,13 @@ export function Dashboard() {
       valor: proximoLivre?.hora ?? '—',
       icone: 'bi-clock',
       cor: 'var(--ah-status-confirmado)',
-      detalhe: proximoLivre ? primeiroNome(proximoLivre.medico.nome.replace(/^Dra?\.\s*/, '')) : 'Sem vagas hoje',
+      detalhe: proximoLivre ? primeiroNome(proximoLivre.medico.nome.replace(/^Dra?\.\s*/, '')) : 'Sem vagas neste dia',
     },
   ]
 
   return (
     <>
-      <PageHeader titulo="Painel do consultório" descricao={formatarDataExtenso(hoje)}>
+      <PageHeader titulo="Painel do consultório" descricao={formatarDataExtenso(data)}>
         <button
           type="button"
           className="btn btn-outline-secondary btn-sm"
@@ -92,6 +101,10 @@ export function Dashboard() {
         </button>
       </PageHeader>
 
+      <div className="mb-4">
+        <NavegadorData data={data} aoMudar={irPara} rotulo="Data do painel" />
+      </div>
+
       <section className="row g-4 mb-4" aria-label="Indicadores do dia">
         {indicadores.map((item) => (
           <div className="col-6 col-xl-3" key={item.rotulo}>
@@ -104,12 +117,12 @@ export function Dashboard() {
         <div className="col-12 col-xl-8">
           <section className="card h-100">
             <div className="card-body">
-              <h2 className="h6 mb-3">Agenda de hoje</h2>
+              <h2 className="h6 mb-3">Agenda do dia</h2>
 
               {agenda.length === 0 ? (
                 <EmptyState
                   icone="bi-calendar3"
-                  titulo="Nenhum agendamento para hoje"
+                  titulo="Nenhum agendamento neste dia"
                   descricao="Os agendamentos criados na agenda aparecem aqui."
                 />
               ) : (
@@ -162,7 +175,7 @@ export function Dashboard() {
         </div>
 
         <div className="col-12 col-xl-4">
-          <PainelAvisos />
+          <PainelAvisos data={data} />
         </div>
       </div>
 
@@ -170,7 +183,7 @@ export function Dashboard() {
           recepção, e obrigar a trocar de tela antes só acrescenta um passo. */}
       <AgendamentoModal
         aberto={agendando}
-        inicial={{ data: hoje }}
+        inicial={{ data }}
         aoFechar={() => setAgendando(false)}
       />
 

@@ -21,9 +21,9 @@ const CORES_AVISO = {
   info: { icone: 'bi-info-circle-fill', cor: 'var(--ah-status-confirmado)' },
 }
 
-export function PainelAvisos() {
+export function PainelAvisos({ data }) {
   const clinica = useClinica()
-  const hoje = hojeISO()
+  const hoje = data ?? hojeISO()
 
   const lembretes = lembretesDoDia(clinica, hoje)
   const avisos = avisosDaData(clinica, hoje)

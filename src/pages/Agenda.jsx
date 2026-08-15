@@ -4,9 +4,10 @@ import { useSearchParams } from 'react-router-dom'
 import { useClinica } from '../store/clinicContext.js'
 import { useToast } from '../hooks/toastContext.js'
 import { bloqueiosDaData, comRelacionados } from '../domain/selectors.js'
-import { ehHoje, formatarDataExtenso, hojeISO, somarDias } from '../domain/format.js'
+import { formatarDataExtenso, hojeISO } from '../domain/format.js'
 
 import { PageHeader } from '../components/ui/PageHeader.jsx'
+import { NavegadorData } from '../components/NavegadorData.jsx'
 import { GradeAgenda } from '../components/agenda/GradeAgenda.jsx'
 import { AgendamentoModal } from '../components/agenda/AgendamentoModal.jsx'
 import { TransferirModal } from '../components/agenda/TransferirModal.jsx'
@@ -66,43 +67,7 @@ export function Agenda() {
 
       <div className="card mb-3">
         <div className="card-body d-flex flex-wrap align-items-center gap-2">
-          <div className="btn-group" role="group" aria-label="Navegar entre os dias">
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              onClick={() => irPara(somarDias(data, -1))}
-              aria-label="Dia anterior"
-            >
-              <i className="bi bi-chevron-left" aria-hidden="true"></i>
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              onClick={() => irPara(hojeISO())}
-              disabled={ehHoje(data)}
-            >
-              Hoje
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              onClick={() => irPara(somarDias(data, 1))}
-              aria-label="Próximo dia"
-            >
-              <i className="bi bi-chevron-right" aria-hidden="true"></i>
-            </button>
-          </div>
-
-          <label className="visually-hidden" htmlFor="agenda-data">
-            Data da agenda
-          </label>
-          <input
-            id="agenda-data"
-            type="date"
-            className="form-control w-auto"
-            value={data}
-            onChange={(evento) => irPara(evento.target.value)}
-          />
+          <NavegadorData data={data} aoMudar={irPara} rotulo="Data da agenda" />
 
           {bloqueios.length > 0 && (
             <div className="d-flex flex-wrap gap-2 ms-auto">
