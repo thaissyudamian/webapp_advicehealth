@@ -84,6 +84,10 @@ export const FORMAS_PAGAMENTO = [
   { valor: 'convenio', rotulo: 'Convênio' },
 ]
 
+export function rotuloFormaPagamento(valor) {
+  return FORMAS_PAGAMENTO.find((f) => f.valor === valor)?.rotulo ?? null
+}
+
 export const TIPOS_CONSULTA = [
   { valor: 'consulta', rotulo: 'Consulta', duracao: 30 },
   { valor: 'retorno', rotulo: 'Retorno', duracao: 20 },

@@ -178,9 +178,21 @@
   );
 }
 
-/* Fora do expediente do médico: neutro, e diferente de uma faixa vaga */
+/* Fora do expediente do médico.
+
+   Precisa de marca visual própria: sem ela a célula fica apenas cinza e vazia,
+   idêntica a um horário livre que deveria abrir o agendamento — quem clica e
+   nada acontece conclui que a tela está quebrada. As listras dizem "aqui não
+   se agenda", e o cabeçalho da coluna diz por quê. */
 .agenda-celula-fora {
   background-color: var(--ah-bg);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(0, 0, 0, 0.022) 6px,
+    rgba(0, 0, 0, 0.022) 12px
+  );
 }
 
 .agenda-continuacao {

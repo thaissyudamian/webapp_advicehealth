@@ -60,7 +60,13 @@ export function GradeAgenda({ data, medicoId, aoClicarLivre, aoClicarAgendamento
               <span className="agenda-medico-cor" style={{ backgroundColor: medico.cor }} aria-hidden="true" />
               <span>
                 {medico.nome}
-                <small>{medico.especialidade}</small>
+                {/* O expediente no cabeçalho explica de uma vez por que as
+                    primeiras e as últimas faixas da coluna estão indisponíveis:
+                    o eixo de horas é a união de todos os médicos. */}
+                <small>
+                  {medico.especialidade} · {medico.horarioAtendimento.inicio}–
+                  {medico.horarioAtendimento.fim}
+                </small>
               </span>
             </span>
           </div>
@@ -89,7 +95,13 @@ function Linha({ hora, colunas, aoClicarLivre, aoClicarAgendamento }) {
         const horario = porHora.get(hora)
 
         if (!horario) {
-          return <div className="agenda-celula agenda-celula-fora" key={medico.id} />
+          return (
+            <div
+              className="agenda-celula agenda-celula-fora"
+              key={medico.id}
+              title={`Fora do expediente de ${medico.nome}`}
+            />
+          )
         }
 
         return (

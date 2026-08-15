@@ -7,6 +7,7 @@ import {
   STATUS,
   STATUS_INFO,
   proximosStatus,
+  rotuloFormaPagamento,
   rotuloSexo,
   rotuloTipoConsulta,
 } from '../../domain/constants.js'
@@ -168,6 +169,14 @@ export function DetalheAgendamento({ aberto, agendamento, aoFechar, aoAlterar, a
               <span className="text-secondary">
                 {' '}
                 (desconto de {formatarMoeda(agendamento.pagamento.desconto)})
+              </span>
+            )}
+            {/* Como o valor entrou faz parte da informação de cobrança: é o que
+                o fechamento de caixa precisa, e o campo é obrigatório quando a
+                situação é "pago". */}
+            {rotuloFormaPagamento(agendamento.pagamento.forma) && (
+              <span className="d-block text-secondary">
+                {rotuloFormaPagamento(agendamento.pagamento.forma)}
               </span>
             )}
           </dd>

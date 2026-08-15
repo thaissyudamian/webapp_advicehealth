@@ -9,6 +9,7 @@ import {
   STATUS,
   STATUS_INFO,
   GRUPOS_CONSULTA,
+  rotuloFormaPagamento,
   rotuloTipoConsulta,
 } from '../domain/constants.js'
 import { formatarCPF, formatarData, formatarMoeda, hojeISO, somarDias } from '../domain/format.js'
@@ -367,6 +368,13 @@ export function Agendamentos() {
                         </td>
                         <td>
                           <Badge rotulo={pagamento.rotulo} cor={pagamento.cor} />
+                          {/* Como o valor entrou faz parte da informação de
+                              cobrança — é o que o fechamento de caixa precisa. */}
+                          {rotuloFormaPagamento(item.pagamento.forma) && (
+                            <span className="d-block small text-secondary mt-1">
+                              {rotuloFormaPagamento(item.pagamento.forma)}
+                            </span>
+                          )}
                         </td>
                         <td className="text-end font-monospace">
                           {formatarMoeda(valorLiquido(item.pagamento))}
