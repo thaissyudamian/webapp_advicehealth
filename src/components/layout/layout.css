@@ -1,0 +1,158 @@
+/* Estrutura da aplicação: barra lateral + coluna de conteúdo.
+
+   O mecanismo responsivo da lateral é do próprio Bootstrap: a classe
+   .offcanvas-lg comporta-se como gaveta abaixo de 992px e como bloco normal
+   acima disso. Aqui ficam só a largura, as superfícies e o empilhamento. */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-lateral {
+  --bs-offcanvas-width: var(--ah-sidebar-width);
+}
+
+/* O fundo fica no elemento interno: acima de 992px o Bootstrap força
+   background-color transparente no .offcanvas-lg com !important, e pintar aqui
+   dentro evita ter que responder com outro !important. */
+.app-lateral-interna {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--ah-surface);
+  border-right: 1px solid var(--ah-border);
+}
+
+@media (min-width: 992px) {
+  .app-lateral {
+    width: var(--ah-sidebar-width);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+}
+
+.app-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  height: var(--ah-topbar-height);
+  border-bottom: 1px solid var(--ah-border);
+  flex-shrink: 0;
+}
+
+.app-marca-simbolo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-primary);
+  color: #fff;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.app-marca-nome {
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.app-marca-nome small {
+  display: block;
+  font-weight: 400;
+  font-size: 11.5px;
+  color: var(--ah-text-muted);
+}
+
+.app-lateral-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 12px;
+}
+
+.app-lateral .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  font-weight: 500;
+}
+
+.app-lateral .nav-link i {
+  font-size: 17px;
+}
+
+.app-lateral-rodape {
+  padding: 14px 20px;
+  border-top: 1px solid var(--ah-border);
+  flex-shrink: 0;
+}
+
+/* ---------- Coluna de conteúdo ---------- */
+
+.app-coluna {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-topo {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: var(--ah-topbar-height);
+  padding: 0 16px;
+  background-color: var(--ah-surface);
+  border-bottom: 1px solid var(--ah-border);
+}
+
+.app-principal {
+  flex: 1;
+  padding: 20px 16px 48px;
+}
+
+@media (min-width: 992px) {
+  .app-topo { padding: 0 28px; }
+  .app-principal { padding: 26px 28px 56px; }
+}
+
+.app-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--ah-primary-soft);
+  color: var(--ah-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ---------- Acessibilidade ---------- */
+
+/* Atalho para quem navega por teclado pular a navegação repetida.
+   Fica fora da tela até receber foco. */
+.pular-para-conteudo {
+  position: absolute;
+  left: -9999px;
+  z-index: 1080;
+}
+
+.pular-para-conteudo:focus {
+  left: 12px;
+  top: 12px;
+  padding: 10px 16px;
+  background-color: var(--ah-surface);
+  border: 1px solid var(--ah-primary);
+  border-radius: var(--ah-radius-sm);
+  text-decoration: none;
+}
