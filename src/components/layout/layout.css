@@ -1,58 +1,43 @@
-/* Estrutura da aplicação: barra lateral + coluna de conteúdo.
+/* Estrutura da aplicação: barra superior com navegação + área de conteúdo.
 
-   O mecanismo responsivo da lateral é do próprio Bootstrap: a classe
-   .offcanvas-lg comporta-se como gaveta abaixo de 992px e como bloco normal
-   acima disso. Aqui ficam só a largura, as superfícies e o empilhamento. */
+   A navegação fica no topo, não na lateral: são três telas, e a barra
+   horizontal devolve toda a largura ao conteúdo — que aqui é grade de agenda e
+   tabela, os dois formatos que mais sofrem com espaço estreito. */
 
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-}
-
-.app-lateral {
-  --bs-offcanvas-width: var(--ah-sidebar-width);
-}
-
-/* O fundo fica no elemento interno: acima de 992px o Bootstrap força
-   background-color transparente no .offcanvas-lg com !important, e pintar aqui
-   dentro evita ter que responder com outro !important. */
-.app-lateral-interna {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+.app-topo {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
   background-color: var(--ah-surface);
-  border-right: 1px solid var(--ah-border);
+  border-bottom: 1px solid var(--ah-border);
 }
 
-@media (min-width: 992px) {
-  .app-lateral {
-    width: var(--ah-sidebar-width);
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-  }
+.app-topo-interno {
+  max-width: var(--ah-largura-maxima);
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .app-marca {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 20px;
-  height: var(--ah-topbar-height);
-  border-bottom: 1px solid var(--ah-border);
   flex-shrink: 0;
 }
 
 .app-marca-simbolo {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--ah-radius-sm);
   background-color: var(--ah-primary);
   color: #fff;
-  font-size: 17px;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
@@ -68,60 +53,48 @@
   color: var(--ah-text-muted);
 }
 
-.app-lateral-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 12px;
+/* ---------- Navegação ---------- */
+
+.app-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  /* Barra de rolagem escondida: com três itens ela quase nunca aparece, e
+     quando aparece no celular atrapalha mais do que ajuda. */
+  scrollbar-width: none;
 }
 
-.app-lateral .nav-link {
+.app-nav::-webkit-scrollbar { display: none; }
+
+.app-nav-link {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 9px 12px;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--ah-radius-sm);
+  color: var(--ah-text-muted);
   font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-.app-lateral .nav-link i {
-  font-size: 17px;
+.app-nav-link:hover {
+  background-color: var(--ah-bg);
+  color: var(--ah-text);
 }
 
-.app-lateral-rodape {
-  padding: 14px 20px;
-  border-top: 1px solid var(--ah-border);
-  flex-shrink: 0;
+/* Ativo com fundo suave em vez de sólido: no topo, um bloco de cor cheia a
+   cada tela compete com o conteúdo logo abaixo. */
+.app-nav-link.ativo {
+  background-color: var(--ah-primary-soft);
+  color: var(--ah-primary);
 }
 
-/* ---------- Coluna de conteúdo ---------- */
-
-.app-coluna {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-topo {
-  position: sticky;
-  top: 0;
-  z-index: 1020;
+.app-topo-direita {
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: var(--ah-topbar-height);
-  padding: 0 16px;
-  background-color: var(--ah-surface);
-  border-bottom: 1px solid var(--ah-border);
-}
-
-.app-principal {
-  flex: 1;
-  padding: 20px 16px 48px;
-}
-
-@media (min-width: 992px) {
-  .app-topo { padding: 0 28px; }
-  .app-principal { padding: 26px 28px 56px; }
+  gap: 14px;
+  margin-left: auto;
 }
 
 .app-avatar {
@@ -135,6 +108,22 @@
   font-size: 12.5px;
   font-weight: 600;
   flex-shrink: 0;
+}
+
+/* Abaixo de 768px a navegação passa para a segunda linha, ocupando a largura
+   inteira, em vez de espremer marca e usuário. */
+@media (max-width: 767.98px) {
+  .app-topo-interno { gap: 12px; }
+  .app-nav { order: 3; width: 100%; }
+  .app-topo-direita { margin-left: auto; }
+}
+
+/* ---------- Conteúdo ---------- */
+
+.app-principal {
+  max-width: var(--ah-largura-maxima);
+  margin: 0 auto;
+  padding: 24px 20px 64px;
 }
 
 /* ---------- Acessibilidade ---------- */

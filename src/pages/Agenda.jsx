@@ -1,18 +1,21 @@
+import { PageHeader } from '../components/ui/PageHeader.jsx'
+import { EmptyState } from '../components/ui/EmptyState.jsx'
+
 export function Agenda() {
   return (
     <>
-      <div className="mb-4">
-        <h1 className="h4 mb-1">Agenda</h1>
-        <p className="text-secondary mb-0">
-          Grade de horários dos médicos, com inclusão, alteração, transferência e bloqueio de
-          períodos.
-        </p>
-      </div>
+      <PageHeader
+        titulo="Agenda"
+        descricao="Grade de horários dos médicos, com inclusão, alteração, transferência e bloqueio de períodos."
+      />
 
       <div className="card">
-        <div className="card-body text-center py-5">
-          <i className="bi bi-calendar3 fs-1 text-secondary" aria-hidden="true"></i>
-          <p className="text-secondary mt-3 mb-0">Grade em construção.</p>
+        <div className="card-body">
+          <EmptyState
+            icone="bi-calendar3"
+            titulo="Grade em construção"
+            descricao="Aqui ficará a agenda do dia, com uma coluna por médico."
+          />
         </div>
       </div>
     </>

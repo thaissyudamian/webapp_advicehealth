@@ -10,11 +10,16 @@ import './styles/theme.css'
 
 import App from './App.jsx'
 import { ClinicProvider } from './store/ClinicProvider.jsx'
+import { ToastProvider } from './components/ui/ToastProvider.jsx'
 
+/* ToastProvider por fora: assim uma falha ao carregar os dados da clínica
+   ainda consegue emitir uma notificação. */
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ClinicProvider>
-      <App />
-    </ClinicProvider>
+    <ToastProvider>
+      <ClinicProvider>
+        <App />
+      </ClinicProvider>
+    </ToastProvider>
   </StrictMode>
 )

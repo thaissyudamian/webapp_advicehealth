@@ -9,7 +9,12 @@
 const LOCALE = 'pt-BR'
 
 const moeda = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: 'BRL' })
-const dataExtensa = new Intl.DateTimeFormat(LOCALE, { weekday: 'long', day: '2-digit', month: 'long' })
+const dataExtensa = new Intl.DateTimeFormat(LOCALE, {
+  weekday: 'long',
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+})
 const diaSemanaCurto = new Intl.DateTimeFormat(LOCALE, { weekday: 'short' })
 
 export function somenteDigitos(valor) {
@@ -62,6 +67,11 @@ export function somarDias(iso, dias) {
 
 export function ehHoje(iso) {
   return iso === hojeISO()
+}
+
+export function horaAtual() {
+  const agora = new Date()
+  return `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`
 }
 
 export function calcularIdade(nascimentoISO) {

@@ -1,0 +1,44 @@
+.painel-lembrete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--ah-border);
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-bg);
+  font-size: 14px;
+}
+
+.painel-lembrete-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.painel-lembrete .btn {
+  flex-shrink: 0;
+}
+
+.painel-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--ah-border);
+  border-radius: var(--ah-radius-sm);
+}
+
+/* Aviso já lido recua para o segundo plano em vez de sumir: continua
+   consultável, mas não disputa atenção com o que ainda não foi visto. */
+.painel-aviso-lido {
+  opacity: 0.6;
+  background-color: var(--ah-bg);
+}
+
+@media (max-width: 575.98px) {
+  .painel-lembrete {
+    flex-wrap: wrap;
+  }
+  .painel-lembrete .btn {
+    margin-left: auto;
+  }
+}

@@ -1,0 +1,134 @@
+/* Estilos dos componentes de UI.
+
+   Só o que o Bootstrap não cobre: pilha de notificações, pastilha de situação
+   e o cartão de indicador. */
+
+/* ---------- Notificações ---------- */
+
+.ui-toasts {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1090; /* acima do modal (1055) — um erro ao salvar precisa aparecer */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(360px, calc(100vw - 32px));
+}
+
+.ui-toast {
+  background-color: var(--ah-surface);
+  border: 1px solid var(--ah-border);
+  border-radius: var(--ah-radius-sm);
+  box-shadow: var(--ah-shadow);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ui-toast {
+    animation: ui-toast-entrada 180ms ease-out;
+  }
+}
+
+@keyframes ui-toast-entrada {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- Pastilha de situação ---------- */
+
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* ---------- Indicador ---------- */
+
+.ui-stat {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+}
+
+.ui-stat-icone {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-primary-soft);
+  color: var(--ah-primary);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.ui-stat-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ui-stat-rotulo {
+  font-size: 13px;
+  color: var(--ah-text-muted);
+}
+
+.ui-stat-valor {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-stat-detalhe {
+  font-size: 12.5px;
+  color: var(--ah-text-muted);
+}
+
+/* Apresentação plana, usada na faixa de indicadores do painel */
+
+.ui-stat-plano-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--ah-text-muted);
+}
+
+.ui-stat-plano-valor {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-stat-acao {
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.ui-stat-acao:hover {
+  border-color: var(--ah-primary);
+  box-shadow: var(--ah-shadow);
+}
+
+.ui-stat-seta {
+  margin-left: auto;
+  color: var(--ah-text-muted);
+  flex-shrink: 0;
+}
