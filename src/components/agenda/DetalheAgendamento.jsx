@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useClinica } from '../../store/clinicContext.js'
 import { useToast } from '../../hooks/toastContext.js'
 import {
+  PAGAMENTO,
   PAGAMENTO_INFO,
   STATUS,
   STATUS_INFO,
@@ -21,6 +22,7 @@ import {
 } from '../../domain/format.js'
 
 import { Modal } from '../ui/Modal.jsx'
+import { CobrancaModal } from './CobrancaModal.jsx'
 import { ConfirmDialog } from '../ui/ConfirmDialog.jsx'
 import { Badge } from '../ui/Badge.jsx'
 
@@ -43,6 +45,7 @@ export function DetalheAgendamento({ aberto, agendamento, aoFechar, aoAlterar, a
   const clinica = useClinica()
   const toast = useToast()
   const [confirmandoCancelamento, setConfirmandoCancelamento] = useState(false)
+  const [editandoCobranca, setEditandoCobranca] = useState(false)
   const [motivoCancelamento, setMotivoCancelamento] = useState('')
   const [processando, setProcessando] = useState(false)
 
@@ -52,6 +55,7 @@ export function DetalheAgendamento({ aberto, agendamento, aoFechar, aoAlterar, a
   const pagamento = PAGAMENTO_INFO[agendamento.pagamento.status]
   const liquido = agendamento.pagamento.valor - agendamento.pagamento.desconto
 
+  const pendente = agendamento.pagamento.status === PAGAMENTO.PENDENTE
   const transicoes = proximosStatus(agendamento.status).filter((s) => s !== STATUS.CANCELADO)
   const podeCancelar = proximosStatus(agendamento.status).includes(STATUS.CANCELADO)
 
@@ -85,7 +89,7 @@ export function DetalheAgendamento({ aberto, agendamento, aoFechar, aoAlterar, a
   return (
     <>
       <Modal
-        aberto={aberto && !confirmandoCancelamento}
+        aberto={aberto && !confirmandoCancelamento && !editandoCobranca}
         titulo={agendamento.paciente?.nome ?? 'Agendamento'}
         aoFechar={aoFechar}
         rodape={
@@ -102,6 +106,18 @@ export function DetalheAgendamento({ aberto, agendamento, aoFechar, aoAlterar, a
               </button>
             )}
             <div className="ms-auto d-flex flex-wrap gap-2">
+              {/* Atalho para a alteração mais repetida: um atendimento acontece
+                  uma vez, a cobrança dele muda depois. O formulário completo
+                  continua disponível em "Alterar". */}
+              <button
+                type="button"
+                className={`btn ${pendente ? 'btn-warning' : 'btn-light'}`}
+                onClick={() => setEditandoCobranca(true)}
+                disabled={processando}
+              >
+                <i className="bi bi-cash-coin me-1" aria-hidden="true"></i>
+                {pendente ? 'Registrar pagamento' : 'Cobrança'}
+              </button>
               <button type="button" className="btn btn-light" onClick={aoTransferir} disabled={processando}>
                 <i className="bi bi-arrow-left-right me-1" aria-hidden="true"></i>
                 Transferir
@@ -226,6 +242,12 @@ export function DetalheAgendamento({ aberto, agendamento, aoFechar, aoAlterar, a
           </details>
         )}
       </Modal>
+
+      <CobrancaModal
+        aberto={editandoCobranca}
+        agendamento={agendamento}
+        aoFechar={() => setEditandoCobranca(false)}
+      />
 
       <ConfirmDialog
         aberto={confirmandoCancelamento}

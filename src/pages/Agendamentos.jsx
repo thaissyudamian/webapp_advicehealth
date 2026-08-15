@@ -20,6 +20,7 @@ import { EmptyState } from '../components/ui/EmptyState.jsx'
 import { AgendamentoModal } from '../components/agenda/AgendamentoModal.jsx'
 import { DetalheAgendamento } from '../components/agenda/DetalheAgendamento.jsx'
 import { TransferirModal } from '../components/agenda/TransferirModal.jsx'
+import { CobrancaModal } from '../components/agenda/CobrancaModal.jsx'
 
 /* Consulta de pacientes agendados e atendidos.
 
@@ -41,6 +42,7 @@ export function Agendamentos() {
   const [selecionado, setSelecionado] = useState(null)
   const [editando, setEditando] = useState(null)
   const [transferindo, setTransferindo] = useState(null)
+  const [cobrando, setCobrando] = useState(null)
 
   const filtros = {
     busca: parametros.get('busca') ?? '',
@@ -401,6 +403,20 @@ export function Agendamentos() {
                           >
                             <i className="bi bi-pencil" aria-hidden="true"></i>
                           </button>
+                          {/* Só nas cobranças pendentes: é o caminho curto para
+                              quem chega aqui pelo lembrete do painel, e mantém
+                              as demais linhas com duas ações apenas. */}
+                          {item.pagamento.status === PAGAMENTO.PENDENTE && !cancelado && (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-warning ms-1"
+                              onClick={() => setCobrando(item)}
+                              aria-label={`Registrar pagamento de ${item.paciente?.nome}`}
+                              title="Registrar pagamento"
+                            >
+                              <i className="bi bi-cash-coin" aria-hidden="true"></i>
+                            </button>
+                          )}
                         </td>
                       </tr>
                     )
@@ -429,6 +445,12 @@ export function Agendamentos() {
         aoFechar={() => setSelecionado(null)}
         aoAlterar={() => setEditando(agendamentoAberto)}
         aoTransferir={() => setTransferindo(agendamentoAberto)}
+      />
+
+      <CobrancaModal
+        aberto={Boolean(cobrando)}
+        agendamento={cobrando}
+        aoFechar={() => setCobrando(null)}
       />
 
       <TransferirModal
