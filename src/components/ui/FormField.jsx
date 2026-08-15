@@ -51,6 +51,10 @@ export function FormField({
     disabled: desabilitado,
     autoFocus: autoFoco,
     placeholder,
+    /* O asterisco do rótulo vem de CSS (::after), que nem todo leitor de tela
+       anuncia. aria-required comunica a obrigatoriedade pela árvore de
+       acessibilidade, independente do visual. */
+    'aria-required': obrigatorio || undefined,
     'aria-invalid': erro ? true : undefined,
     'aria-describedby': [idDica, idErro].filter(Boolean).join(' ') || undefined,
     ...resto,

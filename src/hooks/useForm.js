@@ -102,6 +102,7 @@ export function useForm({ valoresIniciais, validar = () => ({}), aoEnviar }) {
     valores,
     erros,
     tocados,
+    tentouEnviar,
     valido,
     alterado,
     enviando,

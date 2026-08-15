@@ -308,9 +308,15 @@ export function AgendamentoModal({ aberto, agendamento, inicial, aoFechar }) {
               {form.erroEnvio}
             </span>
           )}
-          {totalErros > 0 && form.tocados && (
-            <span className="text-secondary small">
-              Corrija os campos destacados para continuar.
+          {/* Só depois de tentar enviar: `tocados` é um objeto, e {} é truthy —
+              usá-lo aqui fazia a mensagem aparecer com o formulário ainda em
+              branco, reclamando antes de a pessoa digitar qualquer coisa. */}
+          {totalErros > 0 && form.tentouEnviar && (
+            <span className="text-secondary small" role="alert">
+              <i className="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
+              {totalErros === 1
+                ? 'Corrija o campo destacado para continuar.'
+                : `Corrija os ${totalErros} campos destacados para continuar.`}
             </span>
           )}
           <div className="ms-auto d-flex gap-2">
