@@ -4,11 +4,17 @@
    Mantém as telas sem lógica de negócio e permite que Dashboard e Agenda
    derivem os mesmos números da mesma fonte, sem risco de divergirem. */
 
-import { GRADE_INTERVALO, PAGAMENTO, STATUS, STATUS_OCUPAM_HORARIO } from './constants.js'
+import {
+  GRADE_INTERVALO,
+  GRUPOS_CONSULTA,
+  PAGAMENTO,
+  STATUS,
+  STATUS_OCUPAM_HORARIO,
+} from './constants.js'
 import { horaParaMinutos, minutosParaHora, somenteDigitos } from './format.js'
 
-export const buscarMedico = (estado, id) => estado.medicos.find((m) => m.id === id) ?? null
-export const buscarPaciente = (estado, id) => estado.pacientes.find((p) => p.id === id) ?? null
+const buscarMedico = (estado, id) => estado.medicos.find((m) => m.id === id) ?? null
+const buscarPaciente = (estado, id) => estado.pacientes.find((p) => p.id === id) ?? null
 
 export function pacientePorCPF(estado, cpf) {
   const procurado = somenteDigitos(cpf)
@@ -54,8 +60,11 @@ export function filtrarAgendamentos(estado, filtros = {}) {
     pagamento = '',
     de = '',
     ate = '',
+    grupo = '',
     semCancelados = false,
   } = filtros
+
+  const statusDoGrupo = GRUPOS_CONSULTA[grupo]?.status
 
   const termo = busca.trim().toLowerCase()
   const digitos = somenteDigitos(busca)
@@ -67,6 +76,7 @@ export function filtrarAgendamentos(estado, filtros = {}) {
          "5 pagamentos pendentes" abriria uma lista com 6 linhas. */
       if (semCancelados && a.status === STATUS.CANCELADO) return false
       if (medicoId && a.medicoId !== medicoId) return false
+      if (statusDoGrupo && !statusDoGrupo.includes(a.status)) return false
       if (status && a.status !== status) return false
       if (pagamento && a.pagamento?.status !== pagamento) return false
       if (de && a.data < de) return false

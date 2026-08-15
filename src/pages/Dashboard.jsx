@@ -59,7 +59,17 @@ export function Dashboard() {
       rotulo: 'Agendamentos do dia',
       valor: resumo.agendamentos,
       icone: 'bi-calendar3',
-      detalhe: resumo.cancelados > 0 ? `${resumo.cancelados} cancelado(s)` : null,
+      /* A tabela abaixo lista o dia inteiro, incluindo cancelados e faltas; o
+         indicador conta só quem ocupa horário. Sem declarar os dois motivos, o
+         usuário conta as linhas, chega a outro número e não sabe qual está
+         errado. */
+      detalhe:
+        [
+          resumo.cancelados > 0 ? `${resumo.cancelados} cancelado(s)` : null,
+          resumo.faltas > 0 ? `${resumo.faltas} falta(s)` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ') || null,
     },
     {
       rotulo: 'Pacientes atendidos',

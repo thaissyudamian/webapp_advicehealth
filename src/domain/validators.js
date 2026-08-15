@@ -95,12 +95,6 @@ export function valorMonetario(valor, { minimo = 0, exigido = true } = {}) {
   return null
 }
 
-export function intervaloHorario(inicio, fim) {
-  if (obrigatorio(inicio) || obrigatorio(fim)) return 'Informe o período completo'
-  if (fim <= inicio) return 'O horário final deve ser maior que o inicial'
-  return null
-}
-
 /* Roda um mapa { campo: () => mensagem|null } e devolve só os campos com erro. */
 export function validarCampos(regras) {
   const erros = {}

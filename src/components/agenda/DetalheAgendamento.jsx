@@ -2,8 +2,22 @@ import { useState } from 'react'
 
 import { useClinica } from '../../store/clinicContext.js'
 import { useToast } from '../../hooks/toastContext.js'
-import { PAGAMENTO_INFO, STATUS, STATUS_INFO, proximosStatus } from '../../domain/constants.js'
-import { formatarCPF, formatarData, formatarMoeda, formatarTelefone } from '../../domain/format.js'
+import {
+  PAGAMENTO_INFO,
+  STATUS,
+  STATUS_INFO,
+  proximosStatus,
+  rotuloSexo,
+  rotuloTipoConsulta,
+} from '../../domain/constants.js'
+import {
+  calcularIdade,
+  formatarCPF,
+  formatarData,
+  formatarEndereco,
+  formatarMoeda,
+  formatarTelefone,
+} from '../../domain/format.js'
 
 import { Modal } from '../ui/Modal.jsx'
 import { ConfirmDialog } from '../ui/ConfirmDialog.jsx'
@@ -110,16 +124,39 @@ export function DetalheAgendamento({ aberto, agendamento, aoFechar, aoAlterar, a
             {formatarData(agendamento.data)} às {agendamento.hora} · {agendamento.duracao} min
           </dd>
 
+          <dt className="col-4 col-sm-3 text-secondary fw-normal">Tipo</dt>
+          <dd className="col-8 col-sm-9 mb-0">{rotuloTipoConsulta(agendamento.tipo)}</dd>
+
           <dt className="col-4 col-sm-3 text-secondary fw-normal">Médico</dt>
           <dd className="col-8 col-sm-9 mb-0">
             {agendamento.medico?.nome} — {agendamento.medico?.especialidade}
+            <span className="d-block text-secondary">{agendamento.medico?.crm}</span>
           </dd>
 
           <dt className="col-4 col-sm-3 text-secondary fw-normal">CPF</dt>
           <dd className="col-8 col-sm-9 mb-0">{formatarCPF(agendamento.paciente?.cpf)}</dd>
 
-          <dt className="col-4 col-sm-3 text-secondary fw-normal">Telefone</dt>
-          <dd className="col-8 col-sm-9 mb-0">{formatarTelefone(agendamento.paciente?.telefone)}</dd>
+          <dt className="col-4 col-sm-3 text-secondary fw-normal">Nascimento</dt>
+          <dd className="col-8 col-sm-9 mb-0">
+            {formatarData(agendamento.paciente?.nascimento)}
+            <span className="text-secondary"> · {calcularIdade(agendamento.paciente?.nascimento)} anos</span>
+            <span className="text-secondary"> · {rotuloSexo(agendamento.paciente?.sexo)}</span>
+          </dd>
+
+          <dt className="col-4 col-sm-3 text-secondary fw-normal">Contato</dt>
+          <dd className="col-8 col-sm-9 mb-0">
+            {formatarTelefone(agendamento.paciente?.telefone)}
+            {agendamento.paciente?.email && (
+              <span className="d-block text-secondary">{agendamento.paciente.email}</span>
+            )}
+          </dd>
+
+          {/* O endereço é obrigatório no agendamento; sem exibi-lo aqui, conferir
+              um dado já cadastrado exigiria abrir o formulário de edição. */}
+          <dt className="col-4 col-sm-3 text-secondary fw-normal">Endereço</dt>
+          <dd className="col-8 col-sm-9 mb-0">
+            {formatarEndereco(agendamento.paciente?.endereco) || '—'}
+          </dd>
 
           <dt className="col-4 col-sm-3 text-secondary fw-normal">Convênio</dt>
           <dd className="col-8 col-sm-9 mb-0">{agendamento.paciente?.convenio}</dd>

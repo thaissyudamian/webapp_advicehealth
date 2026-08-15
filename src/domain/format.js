@@ -15,7 +15,6 @@ const dataExtensa = new Intl.DateTimeFormat(LOCALE, {
   month: 'long',
   year: 'numeric',
 })
-const diaSemanaCurto = new Intl.DateTimeFormat(LOCALE, { weekday: 'short' })
 
 export function somenteDigitos(valor) {
   return String(valor ?? '').replace(/\D/g, '')
@@ -37,7 +36,8 @@ export function paraData(iso) {
   return new Date(ano, mes - 1, dia)
 }
 
-export function paraISO(data) {
+/* Usado apenas por somarDias, aqui dentro. */
+function paraISO(data) {
   const mes = String(data.getMonth() + 1).padStart(2, '0')
   const dia = String(data.getDate()).padStart(2, '0')
   return `${data.getFullYear()}-${mes}-${dia}`
@@ -57,11 +57,6 @@ export function formatarDataExtenso(iso) {
   if (!iso) return ''
   const texto = dataExtensa.format(paraData(iso))
   return texto.charAt(0).toUpperCase() + texto.slice(1)
-}
-
-export function formatarDiaSemana(iso) {
-  if (!iso) return ''
-  return diaSemanaCurto.format(paraData(iso)).replace('.', '')
 }
 
 export function somarDias(iso, dias) {
@@ -102,10 +97,6 @@ export function minutosParaHora(minutos) {
   return `${h}:${m}`
 }
 
-export function somarMinutos(hora, minutos) {
-  return minutosParaHora(horaParaMinutos(hora) + minutos)
-}
-
 /* ---------- Valores ---------- */
 
 export function formatarMoeda(valor) {
@@ -140,6 +131,20 @@ export function formatarTelefone(valor) {
 
 export function formatarCEP(valor) {
   return somenteDigitos(valor).slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2')
+}
+
+/* Monta o endereço em uma linha legível, pulando as partes vazias — o
+   complemento é opcional e não pode deixar um " — " solto no meio. */
+export function formatarEndereco(endereco) {
+  if (!endereco?.logradouro) return ''
+  const rua = [endereco.logradouro, endereco.numero].filter(Boolean).join(', ')
+  const partes = [
+    endereco.complemento ? `${rua} — ${endereco.complemento}` : rua,
+    endereco.bairro,
+    [endereco.cidade, endereco.uf].filter(Boolean).join('/'),
+    endereco.cep ? `CEP ${formatarCEP(endereco.cep)}` : null,
+  ]
+  return partes.filter(Boolean).join(' · ')
 }
 
 export function primeiroNome(nome) {

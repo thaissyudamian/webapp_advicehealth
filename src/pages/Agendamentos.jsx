@@ -3,7 +3,14 @@ import { useSearchParams } from 'react-router-dom'
 
 import { useClinica } from '../store/clinicContext.js'
 import { comRelacionados, filtrarAgendamentos, totaisDaConsulta, valorLiquido } from '../domain/selectors.js'
-import { PAGAMENTO, PAGAMENTO_INFO, STATUS, STATUS_INFO } from '../domain/constants.js'
+import {
+  PAGAMENTO,
+  PAGAMENTO_INFO,
+  STATUS,
+  STATUS_INFO,
+  GRUPOS_CONSULTA,
+  rotuloTipoConsulta,
+} from '../domain/constants.js'
 import { formatarCPF, formatarData, formatarMoeda, hojeISO, somarDias } from '../domain/format.js'
 
 import { PageHeader } from '../components/ui/PageHeader.jsx'
@@ -41,6 +48,7 @@ export function Agendamentos() {
     pagamento: parametros.get('pagamento') ?? '',
     de: parametros.get('de') ?? '',
     ate: parametros.get('ate') ?? '',
+    grupo: parametros.get('grupo') ?? '',
     semCancelados: parametros.get('semCancelados') === '1',
   }
 
@@ -48,6 +56,16 @@ export function Agendamentos() {
     const novos = new URLSearchParams(parametros)
     if (valor) novos.set(chave, valor)
     else novos.delete(chave)
+    setParametros(novos, { replace: true })
+  }
+
+  /* Grupo e situação são dois recortes do mesmo campo: escolher um limpa o
+     outro, senão dá para montar uma combinação vazia por engano — "Atendidos"
+     somado a "Cancelado" nunca retorna nada. */
+  const definirGrupo = (grupo) => {
+    const novos = new URLSearchParams(parametros)
+    grupo ? novos.set('grupo', grupo) : novos.delete('grupo')
+    novos.delete('status')
     setParametros(novos, { replace: true })
   }
 
@@ -79,6 +97,34 @@ export function Agendamentos() {
       <div className="card mb-3">
         <div className="card-body">
           <div className="row g-2 align-items-end">
+            <div className="col-12">
+              {/* O escopo divide a consulta em dois grupos — agendados e
+                  atendidos. Sem este controle, ver "todos os agendados" exigiria
+                  quatro consultas separadas pelo filtro de situação, porque ele
+                  expõe os sete estados do modelo em vez desses dois grupos. */}
+              <div className="btn-group" role="group" aria-label="Exibir">
+                <button
+                  type="button"
+                  className={`btn btn-outline-secondary${!filtros.grupo ? ' active' : ''}`}
+                  aria-pressed={!filtros.grupo}
+                  onClick={() => definirGrupo('')}
+                >
+                  Todos
+                </button>
+                {Object.entries(GRUPOS_CONSULTA).map(([chave, valor]) => (
+                  <button
+                    key={chave}
+                    type="button"
+                    className={`btn btn-outline-secondary${filtros.grupo === chave ? ' active' : ''}`}
+                    aria-pressed={filtros.grupo === chave}
+                    onClick={() => definirGrupo(chave)}
+                  >
+                    {valor.rotulo}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="col-12 col-lg-4">
               <label className="form-label" htmlFor="busca">
                 Buscar
@@ -125,7 +171,12 @@ export function Agendamentos() {
                 id="filtro-status"
                 className="form-select"
                 value={filtros.status}
-                onChange={(e) => definirFiltro('status', e.target.value)}
+                onChange={(e) => {
+                  const novos = new URLSearchParams(parametros)
+                  e.target.value ? novos.set('status', e.target.value) : novos.delete('status')
+                  novos.delete('grupo')
+                  setParametros(novos, { replace: true })
+                }}
               >
                 <option value="">Todas</option>
                 {Object.values(STATUS).map((s) => (
@@ -291,8 +342,17 @@ export function Agendamentos() {
                             {formatarCPF(item.paciente?.cpf)}
                           </span>
                         </td>
-                        <td className="font-monospace">
-                          {formatarData(item.data)} <span className="text-secondary">{item.hora}</span>
+                        <td>
+                          <span className="d-block font-monospace">
+                            {formatarData(item.data)}{' '}
+                            <span className="text-secondary">{item.hora}</span>
+                          </span>
+                          {/* O tipo explica por que dois registros do mesmo médico têm
+                              valores diferentes — sem ele, um retorno isento parece
+                              erro de cobrança. */}
+                          <span className="small text-secondary">
+                            {rotuloTipoConsulta(item.tipo)} · {item.duracao} min
+                          </span>
                         </td>
                         <td>
                           <span

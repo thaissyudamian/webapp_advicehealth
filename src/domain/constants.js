@@ -36,10 +36,6 @@ export function proximosStatus(atual) {
   return TRANSICOES[atual] ?? []
 }
 
-export function podeTransitar(de, para) {
-  return proximosStatus(de).includes(para)
-}
-
 /* Um horário só é considerado ocupado por agendamentos nestes estados:
    cancelado e faltou liberam a vaga na grade. */
 export const STATUS_OCUPAM_HORARIO = [
@@ -49,6 +45,22 @@ export const STATUS_OCUPAM_HORARIO = [
   STATUS.EM_ATENDIMENTO,
   STATUS.ATENDIDO,
 ]
+
+/* Os dois grupos em que o escopo divide a consulta: "pacientes agendados e
+   atendidos". Agendado aqui significa "ainda não atendido" — inclui os estados
+   intermediários, que são etapas do mesmo compromisso, não situações à parte.
+   Cancelado e falta ficam de fora dos dois: não são consulta agendada nem
+   atendimento realizado. */
+export const GRUPOS_CONSULTA = {
+  agendados: {
+    rotulo: 'Agendados',
+    status: [STATUS.AGENDADO, STATUS.CONFIRMADO, STATUS.AGUARDANDO, STATUS.EM_ATENDIMENTO],
+  },
+  atendidos: {
+    rotulo: 'Atendidos',
+    status: [STATUS.ATENDIDO],
+  },
+}
 
 export const PAGAMENTO = {
   PENDENTE: 'pendente',
@@ -79,6 +91,10 @@ export const TIPOS_CONSULTA = [
   { valor: 'procedimento', rotulo: 'Procedimento', duracao: 60 },
 ]
 
+export function rotuloTipoConsulta(valor) {
+  return TIPOS_CONSULTA.find((t) => t.valor === valor)?.rotulo ?? valor
+}
+
 export const CONVENIOS = [
   'Particular',
   'Unimed',
@@ -94,6 +110,10 @@ export const SEXOS = [
   { valor: 'O', rotulo: 'Outro' },
 ]
 
+export function rotuloSexo(valor) {
+  return SEXOS.find((s) => s.valor === valor)?.rotulo ?? '—'
+}
+
 export const UFS = [
   'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT',
   'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO',
@@ -108,7 +128,6 @@ export const MOTIVOS_BLOQUEIO = [
   'Outro',
 ]
 
-/* Limites da grade da agenda e granularidade dos horários, em minutos. */
-export const GRADE_INICIO = '07:00'
-export const GRADE_FIM = '19:00'
+/* Granularidade das faixas da agenda, em minutos. Os limites do dia não são
+   constantes: vêm do horarioAtendimento de cada médico. */
 export const GRADE_INTERVALO = 30
