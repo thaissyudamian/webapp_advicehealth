@@ -1,7 +1,6 @@
 /* Área de trabalho: visão do dia para quem opera a recepção. */
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { useClinica } from '../store/clinicContext.js'
 import { useToast } from '../hooks/toastContext.js'
@@ -15,12 +14,14 @@ import { Badge } from '../components/ui/Badge.jsx'
 import { EmptyState } from '../components/ui/EmptyState.jsx'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog.jsx'
 import { PainelAvisos } from '../components/PainelAvisos.jsx'
+import { AgendamentoModal } from '../components/agenda/AgendamentoModal.jsx'
 
 export function Dashboard() {
   const clinica = useClinica()
   const toast = useToast()
   const [confirmandoRestauracao, setConfirmandoRestauracao] = useState(false)
   const [restaurando, setRestaurando] = useState(false)
+  const [agendando, setAgendando] = useState(false)
 
   const hoje = hojeISO()
   const resumo = resumoDoDia(clinica, hoje)
@@ -85,10 +86,10 @@ export function Dashboard() {
           <i className="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
           Restaurar exemplo
         </button>
-        <Link className="btn btn-primary" to="/agenda">
+        <button type="button" className="btn btn-primary" onClick={() => setAgendando(true)}>
           <i className="bi bi-plus-lg me-1" aria-hidden="true"></i>
           Novo agendamento
-        </Link>
+        </button>
       </PageHeader>
 
       <section className="row g-4 mb-4" aria-label="Indicadores do dia">
@@ -164,6 +165,14 @@ export function Dashboard() {
           <PainelAvisos />
         </div>
       </div>
+
+      {/* Mesmo formulário usado na agenda. Agendar é a ação mais frequente da
+          recepção, e obrigar a trocar de tela antes só acrescenta um passo. */}
+      <AgendamentoModal
+        aberto={agendando}
+        inicial={{ data: hoje }}
+        aoFechar={() => setAgendando(false)}
+      />
 
       <ConfirmDialog
         aberto={confirmandoRestauracao}

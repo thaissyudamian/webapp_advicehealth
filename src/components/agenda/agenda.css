@@ -1,0 +1,228 @@
+/* ---------- Fichas de horário ---------- */
+
+.agenda-horarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agenda-horario {
+  min-width: 74px;
+  padding: 8px 12px;
+  border: 1px solid var(--ah-border);
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-surface);
+  color: var(--ah-text);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.agenda-horario:hover:not(:disabled) {
+  border-color: var(--ah-primary);
+  color: var(--ah-primary);
+}
+
+.agenda-horario.selecionado {
+  border-color: var(--ah-primary);
+  background-color: var(--ah-primary-soft);
+  color: var(--ah-primary);
+  font-weight: 600;
+}
+
+.agenda-horario.indisponivel {
+  background-color: var(--ah-bg);
+  color: var(--ah-text-muted);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- Grade do dia ---------- */
+
+.agenda-grade {
+  display: grid;
+  gap: 1px;
+  background-color: var(--ah-border);
+  border: 1px solid var(--ah-border);
+  border-radius: var(--ah-radius);
+  overflow: hidden;
+  min-width: 720px;
+}
+
+.agenda-rolagem {
+  overflow-x: auto;
+}
+
+.agenda-celula {
+  background-color: var(--ah-surface);
+  padding: 6px;
+  min-height: 56px;
+}
+
+.agenda-cabecalho {
+  background-color: var(--ah-surface);
+  padding: 12px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.agenda-medico {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.agenda-medico-cor {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.agenda-medico small {
+  display: block;
+  font-weight: 400;
+  color: var(--ah-text-muted);
+  font-size: 12px;
+}
+
+.agenda-hora {
+  background-color: var(--ah-bg);
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--ah-text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  min-height: 56px;
+}
+
+/* Célula livre é um botão de largura total: clicar no vazio é a forma mais
+   rápida de agendar, e a hora e o médico já vêm preenchidos. */
+.agenda-livre {
+  width: 100%;
+  height: 100%;
+  min-height: 44px;
+  border: 1px dashed transparent;
+  border-radius: var(--ah-radius-sm);
+  background: none;
+  color: transparent;
+  font-size: 13px;
+}
+
+.agenda-livre:hover,
+.agenda-livre:focus-visible {
+  border-color: var(--ah-primary);
+  background-color: var(--ah-primary-soft);
+  color: var(--ah-primary);
+}
+
+.agenda-cartao {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 9px;
+  border: 1px solid var(--ah-border);
+  border-left: 3px solid var(--cor-situacao, var(--ah-border));
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-surface);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.agenda-cartao:hover {
+  box-shadow: var(--ah-shadow-sm);
+  border-color: var(--ah-primary);
+}
+
+.agenda-cartao-nome {
+  font-weight: 600;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agenda-cartao-info {
+  color: var(--ah-text-muted);
+  font-size: 12px;
+}
+
+.agenda-cartao.cancelado .agenda-cartao-nome {
+  text-decoration: line-through;
+  color: var(--ah-text-muted);
+}
+
+.agenda-indisponivel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 44px;
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-bg);
+  color: var(--ah-text-muted);
+  font-size: 12px;
+  gap: 6px;
+  /* Listras diagonais deixam o período indisponível reconhecível sem depender
+     de cor, e o diferencia de uma célula apenas vazia. */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 0, 0, 0.035) 5px,
+    rgba(0, 0, 0, 0.035) 10px
+  );
+}
+
+/* Fora do expediente do médico: neutro, e diferente de uma faixa vaga */
+.agenda-celula-fora {
+  background-color: var(--ah-bg);
+}
+
+.agenda-continuacao {
+  height: 100%;
+  min-height: 44px;
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-primary-soft);
+  opacity: 0.5;
+}
+
+/* ---------- Formulário de agendamento ---------- */
+
+.agenda-formas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.agenda-forma {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 8px;
+  border: 1px solid var(--ah-border);
+  border-radius: var(--ah-radius-sm);
+  background-color: var(--ah-surface);
+  font-size: 13px;
+  color: var(--ah-text);
+}
+
+.agenda-forma i { font-size: 18px; }
+
+.agenda-forma:hover { border-color: var(--ah-primary); }
+
+.agenda-forma.selecionada {
+  border-color: var(--ah-primary);
+  background-color: var(--ah-primary-soft);
+  color: var(--ah-primary);
+  font-weight: 600;
+}
+
+.agenda-coluna-lateral {
+  background-color: var(--ah-bg);
+  border-radius: var(--ah-radius);
+  padding: 16px;
+}
