@@ -1,18 +1,121 @@
+<img src="docs/capa.svg" alt="Consultório — Gestão de agenda, atendimentos e cobranças" width="100%">
+
 # Consultório — Gestão de Agenda
+
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
+![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-0f766e)
+![Status](https://img.shields.io/badge/status-conclu%C3%ADdo-15803d)
 
 WebApp para a rotina administrativa de um consultório médico: a recepção agenda
 e cobra, o gestor acompanha o dia.
 
-Três módulos: **Painel do consultório**, **Agenda** e **Consulta de
-agendamentos**.
+---
+
+## Índice
+
+- [Descrição do projeto](#descrição-do-projeto)
+- [Status do projeto](#status-do-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Demonstração](#demonstração)
+- [Acesso ao projeto](#acesso-ao-projeto)
+- [Tecnologias utilizadas](#tecnologias-utilizadas)
+- [Estrutura do código](#estrutura-do-código)
+- [Modelo de domínio](#modelo-de-domínio)
+- [Decisões de arquitetura](#decisões-de-arquitetura)
+- [Decisões de produto](#decisões-de-produto)
+- [Acessibilidade](#acessibilidade)
+- [Verificação do escopo](#verificação-do-escopo)
+- [Publicação](#publicação)
+- [Pessoas desenvolvedoras](#pessoas-desenvolvedoras)
+- [Pessoas contribuidoras](#pessoas-contribuidoras)
+- [Licença](#licença)
 
 ---
 
-## Como executar
+## Descrição do projeto
+
+Consultórios pequenos administram o dia em três perguntas: **quem vem hoje**,
+**quem já foi atendido** e **o que ainda não foi pago**. Este WebApp organiza
+essas três respostas em três telas.
+
+- **Painel do consultório** — indicadores do dia, agenda, avisos e lembretes
+  calculados a partir do próprio movimento.
+- **Agenda** — grade de horários por médico, com inclusão, alteração,
+  cancelamento, transferência e indisponibilização de períodos.
+- **Consulta de agendamentos** — pacientes agendados e atendidos, com os dados
+  do paciente, do atendimento, do médico e da cobrança.
+
+Não há backend: os dados ficam no `localStorage` do navegador, atrás de uma
+camada de serviço que simula a latência de uma API.
+
+---
+
+## Status do projeto
+
+**Concluído.** Os três módulos estão implementados e o escopo foi conferido
+linha a linha, com doze lacunas encontradas e corrigidas (ver
+[Verificação do escopo](#verificação-do-escopo)).
+
+---
+
+## Funcionalidades
+
+| | Funcionalidade |
+|---|---|
+| ✅ | Indicadores do dia: agendamentos, atendidos, faturamento e próximo horário livre |
+| ✅ | Agenda do dia e navegação entre datas, no painel e na agenda |
+| ✅ | Avisos cadastrados e lembretes derivados, cada um levando à tela que resolve |
+| ✅ | Grade de horários com uma coluna por médico e filtro por profissional |
+| ✅ | Incluir agendamento pelo botão ou clicando num horário livre |
+| ✅ | Alterar, cancelar e transferir agendamento, com histórico do que mudou |
+| ✅ | Indisponibilizar períodos, inclusive de vários dias, recusando quando há conflitos |
+| ✅ | Cadastro do paciente no ato, com busca por CPF para não duplicar ficha |
+| ✅ | Cobrança no momento do agendamento, com forma de pagamento |
+| ✅ | Consulta por grupo, médico, situação, pagamento, período, nome ou CPF |
+| ✅ | Edição do agendamento e da cobrança, com atalho para pagamentos pendentes |
+| ✅ | Validação de campos obrigatórios, notificações e confirmação em ação sem volta |
+| ✅ | Responsivo e navegável por teclado |
+
+---
+
+## Demonstração
+
+<!--
+  Para incluir capturas, salve os arquivos em docs/ e remova os comentários:
+
+  ### Painel do consultório
+  ![Painel](docs/painel.png)
+
+  ### Agenda
+  ![Agenda](docs/agenda.png)
+
+  ### Agendamento
+  ![Agendamento](docs/agendamento.png)
+
+  ### Consulta de agendamentos
+  ![Consulta](docs/consulta.png)
+-->
+
+Capturas de tela em breve. Enquanto isso, o projeto pode ser executado
+localmente em um comando — ver a seção seguinte.
+
+---
+
+## Acesso ao projeto
+
+**Aplicação publicada:** _a definir_ <!-- substituir pela URL da Vercel -->
+
+**Repositório:** <https://github.com/thaissyudamian/webapp_advicehealth>
+
+### Executando localmente
 
 ```bash
+git clone https://github.com/thaissyudamian/webapp_advicehealth.git
+cd webapp_advicehealth
 npm install
-npm run dev      # servidor de desenvolvimento em http://localhost:5173
+npm run dev      # http://localhost:5173
 ```
 
 Outros comandos:
@@ -23,14 +126,13 @@ npm run preview  # serve o conteúdo de dist/ localmente
 npm run lint     # ESLint
 ```
 
-Não há backend: os dados ficam no `localStorage` do navegador. A aplicação
-carrega uma massa de exemplo na primeira execução — médicos, pacientes e uma
-agenda montada em torno do dia corrente. O botão **Restaurar exemplo**, no
-painel, devolve tudo ao estado inicial.
+A aplicação carrega uma massa de exemplo na primeira execução — médicos,
+pacientes e uma agenda montada em torno do dia corrente. O botão **Restaurar
+exemplo**, no painel, devolve tudo ao estado inicial.
 
 ---
 
-## Stack
+## Tecnologias utilizadas
 
 | | |
 |---|---|
@@ -47,7 +149,7 @@ escopo pede que seja construído com HTML, CSS, Bootstrap e React.
 
 ---
 
-## Estrutura
+## Estrutura do código
 
 ```
 src/
@@ -194,7 +296,13 @@ em qualquer caminho — configurado em `vercel.json`.
 
 ---
 
-## Melhorias propostas sobre o wireframe
+## Decisões de produto
+
+O enunciado menciona wireframes de referência, mas eles não acompanharam o
+material recebido: todas as decisões abaixo foram derivadas do **texto do
+escopo**. O wireframe usado como referência visual — navegação no topo,
+horários em fichas, formas de pagamento como botões — foi desenhado por mim
+durante o desenvolvimento, e não fornecido pelo teste.
 
 1. **Busca por CPF antes do cadastro.** Coletar os dados do paciente do zero a
    cada agendamento produz fichas duplicadas — a falha mais comum desse tipo de
@@ -276,3 +384,24 @@ funcionem ao serem abertas diretamente.
 
 Os dados vivem no navegador de cada visitante — cada pessoa que abrir o
 endereço recebe a massa de exemplo e pode alterá-la sem afetar as demais.
+
+---
+
+## Pessoas desenvolvedoras
+
+| | |
+|---|---|
+| **Thaíssy Damian** | [GitHub](https://github.com/thaissyudamian) · [LinkedIn](#) <!-- inserir URL --> |
+
+---
+
+## Pessoas contribuidoras
+
+Projeto individual. Contribuições são bem-vindas: abra uma *issue* descrevendo
+a proposta antes de enviar um *pull request*.
+
+---
+
+## Licença
+
+Distribuído sob a licença MIT. Ver [`LICENSE`](LICENSE) para o texto completo.
