@@ -87,7 +87,7 @@ Medico       { id, nome, especialidade, crm, cor, valorConsulta, horarioAtendime
 Paciente     { id, nome, cpf, nascimento, sexo, telefone, email, convenio, endereco }
 Agendamento  { id, pacienteId, medicoId, data, hora, duracao, tipo, status,
                observacoes, pagamento, historico[] }
-Bloqueio     { id, medicoId, data, horaInicio, horaFim, motivo }
+Bloqueio     { id, medicoId, data, dataFim, horaInicio, horaFim, motivo }
 Aviso        { id, titulo, texto, tipo, data, lido }
 ```
 
@@ -98,6 +98,10 @@ Aviso        { id, titulo, texto, tipo, data, lido }
 agendado → confirmado → aguardando → em atendimento → atendido
                     ↘ cancelado / faltou
 ```
+
+No bloqueio, `dataFim` é opcional: férias e congresso raramente cabem em um
+dia, mas sem a data final o registro vale apenas no dia de início — o que
+mantém válido o formato anterior.
 
 A interface consulta `proximosStatus()` para saber o que oferecer. Um
 agendamento cancelado não exibe "registrar chegada" porque a regra diz que essa
@@ -166,6 +170,18 @@ simulada de 350–400 ms. Sem a espera, os estados de carregamento e os botões
 ser ligada a um servidor real. Como as funções já são assíncronas, trocar por
 `fetch()` não muda nenhuma assinatura.
 
+### A cobrança abre pronta para cobrar
+
+O escopo parte de que "o pagamento da consulta ocorrerá nesse momento", e o
+botão diz "confirmar agendamento e cobrar". O formulário abre com a situação
+já em "pago", e paciente de convênio abre em "faturar no convênio" — a exceção
+real, em que o consultório fatura depois do atendimento.
+
+A edição da cobrança também é uma ação própria, alcançável em um clique a
+partir do detalhe do agendamento ou da linha da consulta. As regras de
+validação são as mesmas do formulário completo, importadas do domínio: não
+existem duas definições do que é uma cobrança válida.
+
 ### Estado de tela na URL
 
 Data da agenda, data do painel e filtros da consulta ficam em *query string*.
@@ -207,8 +223,18 @@ em qualquer caminho — configurado em `vercel.json`.
    telefone sem precisar abrir a agenda.
 
 8. **Bloqueio de período recusado quando há agendamentos na faixa**, com os
-   conflitos listados. Apagar a agenda de alguém por engano é pior do que
-   exigir um passo a mais.
+   conflitos listados — verificados em todos os dias do intervalo, não só no
+   primeiro. Apagar a agenda de alguém por engano é pior do que exigir um passo
+   a mais.
+
+9. **A consulta fala em dois grupos, não em sete estados.** O escopo pede
+   "pacientes agendados e atendidos"; expor os sete estados do modelo obrigaria
+   quatro consultas separadas para responder "quantos agendados existem?". O
+   filtro por situação continua disponível para quem precisa de precisão.
+
+10. **Atalho de cobrança nas linhas pendentes.** Um atendimento acontece uma
+    vez; a cobrança dele muda depois. O lembrete do painel leva à lista
+    filtrada, e de lá um clique resolve — sem abrir o formulário completo.
 
 ---
 
@@ -219,12 +245,23 @@ em qualquer caminho — configurado em `vercel.json`.
 - atalho "pular para o conteúdo" para navegação por teclado
 - foco devolvido ao elemento de origem ao fechar um modal
 - foco levado ao primeiro campo inválido quando o envio falha
+- campos obrigatórios marcados com `aria-required`, e não apenas com o
+  asterisco do rótulo, que vem de CSS e nem todo leitor de tela anuncia
+- mensagem de erro do formulário com `role="alert"`, anunciada ao tentar enviar
 - situação nunca comunicada só por cor — sempre com rótulo em texto; períodos
   indisponíveis também se distinguem por textura
 - cores dos médicos verificadas para daltonismo (separação mínima ΔE 9,3 em
   deutan) e contraste de texto conforme WCAG AA
 
 ---
+
+## Verificação do escopo
+
+Depois dos três módulos prontos, cada frase do enunciado foi conferida contra a
+tela, com a pergunta "onde exatamente isso aparece?". Doze lacunas apareceram e
+foram corrigidas — nenhuma delas acusada por lint ou build, porque em todas o
+dado existia, a lógica estava certa e faltava exibir. As correções estão nos
+commits `ad1d332`, `9fe3a48`, `ff7d103`, `4138a96` e `3cac58e`.
 
 ## Publicação
 
