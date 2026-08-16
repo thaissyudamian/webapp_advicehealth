@@ -79,6 +79,10 @@ Concluído e publicado.
 
 ## Demonstração
 
+### Painel
+
+![Painel do consultório: indicadores do dia, agenda e lembretes](docs/painel.png)
+
 ### Agenda
 
 ![Grade da agenda, com uma coluna por médico](docs/agenda.png)
