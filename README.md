@@ -7,9 +7,12 @@
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
 ![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-0f766e)
 ![Status](https://img.shields.io/badge/status-conclu%C3%ADdo-15803d)
+[![Aplicação publicada](https://img.shields.io/badge/demo-online-000000?logo=vercel&logoColor=white)](https://webapp-advicehealth.vercel.app/)
 
 WebApp para a rotina administrativa de um consultório médico: a recepção agenda
 e cobra, o gestor acompanha o dia.
+
+**→ [Acessar a aplicação](https://webapp-advicehealth.vercel.app/)**
 
 ---
 
@@ -105,7 +108,7 @@ localmente em um comando — ver a seção seguinte.
 
 ## Acesso ao projeto
 
-**Aplicação publicada:** _a definir_ <!-- substituir pela URL da Vercel -->
+**Aplicação publicada:** <https://webapp-advicehealth.vercel.app/>
 
 **Repositório:** <https://github.com/thaissyudamian/webapp_advicehealth>
 
