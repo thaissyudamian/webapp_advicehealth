@@ -225,7 +225,7 @@ lembrete do painel apontar para a consulta já filtrada.
 
 ## Design e decisões de produto
 
-O desenho da interface é meu: navegação no topo, horários em fichas, formas de
+O desenho da interface é próprio: navegação no topo, horários em fichas, formas de
 pagamento como botões e indicadores sem moldura no painel.
 
 **Busca por CPF antes do cadastro.** Coletar os dados do zero a cada
